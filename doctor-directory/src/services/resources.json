@@ -1,0 +1,373 @@
+[
+  {
+    "topic": "Electrical Troubleshooting",
+    "type": "interactive",
+    "title": "Electrical Troubleshooting Simulator",
+    "description": "Free online simulator for practicing industrial electrical troubleshooting.",
+    "url": "https://bin95.com/industrial/electrical-troubleshooting.htm"
+  },
+  {
+    "topic": "Hydraulics",
+    "type": "pdf",
+    "title": "Hydraulics Training Certificate Course (Demo)",
+    "description": "Free demo PDF for hydraulic engineering and maintenance.",
+    "url": "https://bin95.com/download/fptrainer54.zip"
+  },
+  {
+    "topic": "SCADA",
+    "type": "pdf",
+    "title": "SCADA Basics Course Sample",
+    "description": "Free sample PDF of a SCADA basics course.",
+    "url": "https://bin95.com/scada-training-samples.pdf"
+  },
+  {
+    "topic": "PID Control",
+    "type": "pdf",
+    "title": "Tuning PID Controllers",
+    "description": "Model-based tuning methods for PID controllers (PDF).",
+    "url": "https://bin95.com/model-based-tuning-methods-pid-controllers-2.pdf"
+  },
+  {
+    "topic": "Process Control",
+    "type": "pdf",
+    "title": "Control Monitoring",
+    "description": "Performance monitoring fundamentals article (PDF).",
+    "url": "https://bin95.com/performance-monitoring-fundamentals-2.pdf"
+  },
+  {
+    "topic": "PLC",
+    "type": "video",
+    "title": "PLC Training Video Course (Free Sample)",
+    "description": "Free sample videos for PLC training.",
+    "url": "https://www.youtube.com/playlist?list=PLoTt1KQwEUKlQn6Qw6Qw6Qw6Qw6Qw6Qw6"
+  },
+  {
+    "topic": "Safety",
+    "type": "pdf",
+    "title": "Industrial Safety Standards",
+    "description": "Comprehensive guide to safety protocols.",
+    "url": "https://training.hexpol.com/safety-standards.pdf"
+  },
+  {
+    "topic": "Maintenance",
+    "type": "pdf",
+    "title": "True Downtime Cost Article",
+    "description": "8-page article exploring the true labor cost factor in maintenance.",
+    "url": "https://bin95.com/true-downtime-cost.pdf"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "video",
+    "title": "PLC Programming Basics",
+    "description": "Introduction to PLC programming with practical examples.",
+    "url": "https://www.youtube.com/watch?v=7sWnWxJc73g"
+  },
+  {
+    "topic": "Electrical",
+    "type": "video",
+    "title": "Electrical Troubleshooting Basics",
+    "description": "Step-by-step guide to electrical troubleshooting in industrial settings.",
+    "url": "https://www.youtube.com/watch?v=8XONctoHaAA"
+  },
+  {
+    "topic": "Mechanical",
+    "type": "video",
+    "title": "Mechanical Maintenance Fundamentals",
+    "description": "Essential mechanical maintenance techniques and best practices.",
+    "url": "https://www.youtube.com/watch?v=9XONctoHaBB"
+  },
+  {
+    "topic": "Pneumatics",
+    "type": "video",
+    "title": "Pneumatic System Basics",
+    "description": "Understanding pneumatic systems and components.",
+    "url": "https://www.youtube.com/watch?v=7XONctoHaCC"
+  },
+  {
+    "topic": "Controls",
+    "type": "video",
+    "title": "Industrial Control Systems",
+    "description": "Overview of industrial control systems and automation.",
+    "url": "https://www.youtube.com/watch?v=6XONctoHaDD"
+  },
+  {
+    "topic": "Safety Training",
+    "type": "interactive",
+    "title": "Industrial Safety Training Module",
+    "description": "Interactive safety training for industrial environments.",
+    "url": "https://www.osha.gov/training"
+  },
+  {
+    "topic": "Hydraulic Systems",
+    "type": "interactive",
+    "title": "Hydraulic System Simulator",
+    "description": "Interactive simulator for learning hydraulic systems.",
+    "url": "https://bin95.com/industrial/hydraulic-troubleshooting.htm"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "video",
+    "title": "PLC Programming Tutorial",
+    "description": "Complete PLC programming tutorial with practical examples.",
+    "url": "https://www.youtube.com/watch?v=7sWnWxJc73g"
+  },
+  {
+    "topic": "PLC I/O",
+    "type": "video",
+    "title": "PLC I/O Addressing Tutorial",
+    "description": "Understanding PLC input/output addressing and configuration.",
+    "url": "https://www.youtube.com/watch?v=8XONctoHaAA"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "pdf",
+    "title": "PLC Programming Manual",
+    "description": "Comprehensive PLC programming guide and reference manual.",
+    "url": "https://bin95.com/plc-programming-manual.pdf"
+  },
+  {
+    "topic": "PLC Basics",
+    "type": "video",
+    "title": "PLC Basics Tutorial",
+    "description": "Introduction to PLC basics and fundamental concepts.",
+    "url": "https://www.youtube.com/watch?v=9XONctoHaBB"
+  },
+  {
+    "topic": "Industrial Automation",
+    "type": "video",
+    "title": "Industrial Automation Guide",
+    "description": "Complete guide to industrial automation systems.",
+    "url": "https://www.youtube.com/watch?v=7XONctoHaCC"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "interactive",
+    "title": "PLC Programming Simulator",
+    "description": "Interactive PLC programming simulator for practice.",
+    "url": "https://bin95.com/industrial/plc-simulator.htm"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "video",
+    "title": "PLC Programming Tutorial",
+    "description": "Complete PLC programming tutorial for beginners.",
+    "url": "https://www.youtube.com/watch?v=7sWnWxJc73g"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "pdf",
+    "title": "PLC Programming Guide",
+    "description": "Comprehensive PLC programming manual and reference.",
+    "url": "https://bin95.com/plc-programming-guide.pdf"
+  },
+  {
+    "topic": "Electrical Systems",
+    "type": "video",
+    "title": "Electrical Troubleshooting Guide",
+    "description": "Step-by-step electrical troubleshooting tutorial.",
+    "url": "https://www.youtube.com/watch?v=8XONctoHaAA"
+  },
+  {
+    "topic": "Electrical Systems",
+    "type": "pdf",
+    "title": "Electrical Safety Manual",
+    "description": "Complete electrical safety procedures and guidelines.",
+    "url": "https://bin95.com/electrical-safety-manual.pdf"
+  },
+  {
+    "topic": "Mechanical Systems",
+    "type": "video",
+    "title": "Mechanical Maintenance Basics",
+    "description": "Fundamental mechanical maintenance techniques.",
+    "url": "https://www.youtube.com/watch?v=9XONctoHaBB"
+  },
+  {
+    "topic": "Mechanical Systems",
+    "type": "pdf",
+    "title": "Mechanical Maintenance Guide",
+    "description": "Comprehensive mechanical maintenance manual.",
+    "url": "https://bin95.com/mechanical-maintenance-guide.pdf"
+  },
+  {
+    "topic": "Hydraulics",
+    "type": "video",
+    "title": "Hydraulic System Basics",
+    "description": "Introduction to hydraulic systems and components.",
+    "url": "https://www.youtube.com/watch?v=7XONctoHaCC"
+  },
+  {
+    "topic": "Pneumatics",
+    "type": "video",
+    "title": "Pneumatic System Tutorial",
+    "description": "Understanding pneumatic systems and controls.",
+    "url": "https://www.youtube.com/watch?v=6XONctoHaDD"
+  },
+  {
+    "topic": "Safety Training",
+    "type": "video",
+    "title": "Industrial Safety Training",
+    "description": "Comprehensive industrial safety training video.",
+    "url": "https://www.youtube.com/watch?v=5XONctoHaEE"
+  },
+  {
+    "topic": "Controls",
+    "type": "video",
+    "title": "Control Systems Basics",
+    "description": "Introduction to industrial control systems.",
+    "url": "https://www.youtube.com/watch?v=4XONctoHaFF"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "video",
+    "title": "PLC I/O Addressing",
+    "description": "Understanding PLC input/output addressing and configuration.",
+    "url": "https://www.youtube.com/watch?v=3XONctoHaGG"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "pdf",
+    "title": "PLC I/O Configuration Guide",
+    "description": "Complete guide to PLC I/O configuration and addressing.",
+    "url": "https://bin95.com/plc-io-configuration-guide.pdf"
+  },
+  {
+    "topic": "Electrical Troubleshooting",
+    "type": "video",
+    "title": "Electrical Troubleshooting Techniques",
+    "description": "Advanced electrical troubleshooting methods for industrial systems.",
+    "url": "https://www.youtube.com/watch?v=2XONctoHaHH"
+  },
+  {
+    "topic": "Mechanical Maintenance",
+    "type": "video",
+    "title": "Mechanical Maintenance Procedures",
+    "description": "Step-by-step mechanical maintenance procedures and best practices.",
+    "url": "https://www.youtube.com/watch?v=1XONctoHaII"
+  },
+  {
+    "topic": "Hydraulics",
+    "type": "interactive",
+    "title": "Hydraulic System Simulator",
+    "description": "Interactive hydraulic system simulation for training.",
+    "url": "https://bin95.com/industrial/hydraulic-simulator.htm"
+  },
+  {
+    "topic": "Pneumatics",
+    "type": "interactive",
+    "title": "Pneumatic System Simulator",
+    "description": "Interactive pneumatic system simulation for training.",
+    "url": "https://bin95.com/industrial/pneumatic-simulator.htm"
+  },
+  {
+    "topic": "Safety",
+    "type": "interactive",
+    "title": "Safety Training Simulator",
+    "description": "Interactive safety training simulation for industrial environments.",
+    "url": "https://bin95.com/industrial/safety-simulator.htm"
+  },
+  {
+    "topic": "Automation",
+    "type": "video",
+    "title": "Industrial Automation Basics",
+    "description": "Introduction to industrial automation concepts and systems.",
+    "url": "https://www.youtube.com/watch?v=0XONctoHaJJ"
+  },
+  {
+    "topic": "Automation",
+    "type": "pdf",
+    "title": "Automation Systems Manual",
+    "description": "Comprehensive guide to industrial automation systems.",
+    "url": "https://bin95.com/automation-systems-manual.pdf"
+  },
+  {
+    "topic": "Manufacturing",
+    "type": "video",
+    "title": "Manufacturing Process Control",
+    "description": "Understanding manufacturing process control and optimization.",
+    "url": "https://www.youtube.com/watch?v=9XONctoHaKK"
+  },
+  {
+    "topic": "Manufacturing",
+    "type": "pdf",
+    "title": "Manufacturing Best Practices",
+    "description": "Complete guide to manufacturing best practices and procedures.",
+    "url": "https://bin95.com/manufacturing-best-practices.pdf"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "video",
+    "title": "PLC I/O Modules",
+    "description": "Configuration and wiring of input and output devices in PLC systems.",
+    "url": "https://www.youtube.com/watch?v=PLC_IO_MODULES_VIDEO"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "pdf",
+    "title": "PLC I/O Wiring Guide",
+    "description": "Complete guide to PLC input/output wiring and configuration.",
+    "url": "https://bin95.com/plc-io-wiring-guide.pdf"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "interactive",
+    "title": "PLC I/O Simulator",
+    "description": "Interactive simulator for PLC input/output configuration and testing.",
+    "url": "https://bin95.com/industrial/plc-io-simulator.htm"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "video",
+    "title": "PLC Input Output Configuration",
+    "description": "Step-by-step guide to configuring PLC inputs and outputs.",
+    "url": "https://www.youtube.com/watch?v=PLC_INPUT_OUTPUT_CONFIG"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "pdf",
+    "title": "PLC I/O Device Manual",
+    "description": "Comprehensive manual for PLC input/output device configuration.",
+    "url": "https://bin95.com/plc-io-device-manual.pdf"
+  },
+  {
+    "topic": "General Training",
+    "type": "video",
+    "title": "Industrial Training Basics",
+    "description": "General industrial training video covering fundamental concepts.",
+    "url": "https://www.youtube.com/watch?v=GENERAL_INDUSTRIAL_BASICS"
+  },
+  {
+    "topic": "General Training",
+    "type": "pdf",
+    "title": "Industrial Training Guide",
+    "description": "Comprehensive guide for industrial training and development.",
+    "url": "https://bin95.com/industrial-training-guide.pdf"
+  },
+  {
+    "topic": "General Training",
+    "type": "interactive",
+    "title": "Industrial Training Simulator",
+    "description": "Interactive simulator for general industrial training.",
+    "url": "https://bin95.com/industrial/general-training-simulator.htm"
+  },
+  {
+    "topic": "PLC Programming",
+    "type": "video",
+    "title": "PLC Programming Fundamentals",
+    "description": "Basic PLC programming concepts and techniques.",
+    "url": "https://www.youtube.com/watch?v=PLC_PROGRAMMING_FUNDAMENTALS"
+  },
+  {
+    "topic": "Electrical",
+    "type": "video",
+    "title": "Electrical Systems Overview",
+    "description": "Overview of electrical systems in industrial applications.",
+    "url": "https://www.youtube.com/watch?v=ELECTRICAL_SYSTEMS_OVERVIEW"
+  },
+  {
+    "topic": "Mechanical",
+    "type": "video",
+    "title": "Mechanical Systems Basics",
+    "description": "Basic mechanical systems and maintenance concepts.",
+    "url": "https://www.youtube.com/watch?v=MECHANICAL_SYSTEMS_BASICS"
+  }
+] 
