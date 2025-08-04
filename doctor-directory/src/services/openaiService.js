@@ -32,7 +32,7 @@ const createOpenAI = () => {
   });
 };
 
-const API_URL = 'http://localhost:4000/api/generate';
+const API_URL = 'https://openai-proxy-3wxw.onrender.com/api/generate';
 
 export class OpenAIService {
   static async generateTrainingPlan(formData) {
