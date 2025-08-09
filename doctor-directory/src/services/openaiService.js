@@ -137,15 +137,12 @@ Respond as a knowledgeable instructor who understands both the technical content
   }
 
   static buildTrainingPlanPrompt(formData) {
-    // Calcular semanas basadas en tiempo objetivo y horas disponibles
+    // Calcular semanas basadas EXACTAMENTE en tiempo objetivo
     const targetMonths = parseInt(formData.targetTime) || 1;
     const hoursPerWeek = parseInt(formData.hoursPerWeek.split('-')[0]) || 2;
     
-    // Calcular semanas totales basadas en tiempo objetivo
-    const totalWeeks = targetMonths * 4; // 4 semanas por mes
-    
-    // Ajustar basado en horas disponibles (más horas = menos semanas necesarias)
-    const adjustedWeeks = Math.max(3, Math.min(12, Math.ceil(totalWeeks * (2 / hoursPerWeek))));
+    // SEMANAS EXACTAS: 1 mes = 4 semanas, 2 meses = 8 semanas, etc.
+    const adjustedWeeks = targetMonths * 4;
     
     // Determine content language based on preference
     const getContentLanguage = () => {
@@ -191,6 +188,13 @@ Respond as a knowledgeable instructor who understands both the technical content
     };
 
     return `Create a HIGHLY PERSONALIZED industrial technical training plan for ${formData.fullName} (${formData.currentRole}, ${formData.position}) at TechFlow Academy.
+
+🚨 **ABSOLUTE PRIORITY - DEVELOPMENT GOAL FOCUS:**
+The ENTIRE training plan must be centered around: "${formData.developmentGoal}"
+- Every single week must be designed to advance toward this specific goal
+- Use the exact keywords and concepts mentioned in the development goal
+- Structure the progression to build skills specifically needed for this goal
+- ALL content must be relevant and directly applicable to achieving: "${formData.developmentGoal}"
 
 **CRITICAL PERSONALIZATION REQUIREMENTS:**
 
