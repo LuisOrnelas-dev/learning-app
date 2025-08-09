@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { FaUser, FaCog, FaGraduationCap, FaGlobe, FaClock, FaBullseye, FaTools, FaBook, FaRobot, FaSpinner, FaFileExport, FaComments, FaTimes, FaPaperPlane, FaKey, FaChartBar, FaCalendar, FaCheckCircle, FaClipboardCheck, FaDownload, FaTimesCircle, FaFileAlt, FaUserTie } from "react-icons/fa";
 import { OpenAIService } from './services/openaiService';
-import { DemoService } from './services/demoService';
-import { OllamaService } from './services/ollamaService';
 import { EvaluationService } from './services/evaluationService';
 import { ResourceEnrichmentService } from './services/resourceEnrichmentService';
 import EvaluationSystem, { EvaluationHistory } from './components/EvaluationSystem';
-import ApiConfig from './components/ApiConfig';
 import VideoPlayer from './components/VideoPlayer';
 import PDFViewer from './components/PDFViewer';
 import InlinePDFViewer from './components/InlinePDFViewer';
