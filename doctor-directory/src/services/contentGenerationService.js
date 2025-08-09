@@ -239,12 +239,12 @@ CRITICAL: Write ALL instructions in ${contentLanguage}`;
         .filter(line => line.length > 0 && !line.startsWith('#'))
         .slice(0, 5); // Take only first 5 instructions
       
-      return instructions.length > 0 ? instructions : this.getFallbackInstructions(title, contentLanguage);
+      return instructions.length > 0 ? instructions.join('\n') : this.getFallbackInstructions(title, contentLanguage).join('\n');
       
     } catch (error) {
       console.error('Error generating dynamic instructions:', error);
       const contentLanguage = this.getContentLanguage(formData);
-      return this.getFallbackInstructions(title, contentLanguage);
+      return this.getFallbackInstructions(title, contentLanguage).join('\n');
     }
   }
 
