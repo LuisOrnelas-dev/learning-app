@@ -99,6 +99,21 @@ const TheoreticalEvaluation = ({ module, onComplete, formData }) => {
       const { EvaluationService } = require('../services/evaluationService');
       const saved = EvaluationService.saveEvaluation(evaluation);
       
+      // Save to localStorage for simple history
+      const examHistory = JSON.parse(localStorage.getItem('examHistory') || '[]');
+      const examRecord = {
+        id: `exam_${Date.now()}`,
+        weekTitle: module.title,
+        score: finalScore,
+        totalQuestions: questions.length,
+        correctAnswers: Math.round((finalScore / 100) * questions.length),
+        date: new Date().toLocaleDateString(),
+        passed: finalScore >= 70
+      };
+      examHistory.push(examRecord);
+      localStorage.setItem('examHistory', JSON.stringify(examHistory));
+      console.log('💾 Exam saved to history:', examRecord);
+      
       if (saved) {
         // Don't call onComplete immediately, let user see results first
         console.log('Evaluation saved successfully');

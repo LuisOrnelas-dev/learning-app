@@ -498,6 +498,7 @@ export default function HexpolTrainingForm() {
 
   const [activeTab, setActiveTab] = useState('form');
   const [evaluationStats, setEvaluationStats] = useState(null);
+
   const [activeWeek, setActiveWeek] = useState(1);
   const [completedWeeks, setCompletedWeeks] = useState(new Set());
 
@@ -1761,6 +1762,7 @@ export default function HexpolTrainingForm() {
         )}
       </div>
 
+
       {/* Chatbot */}
       {showChatbot && (
         <div className="fixed bottom-4 right-4 z-50 w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
@@ -2537,8 +2539,72 @@ export default function HexpolTrainingForm() {
 
                 {/* Evaluation History */}
                 <div className="bg-white p-6 rounded-lg border border-gray-200">
-                  <h3 className="text-lg font-semibold mb-4">Evaluation History</h3>
-                  <EvaluationHistory module="all" />
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <FaClipboardCheck className="text-green-600 mr-2" />
+                    Recent Exam History
+                  </h3>
+                  
+                  {(() => {
+                    const examHistory = JSON.parse(localStorage.getItem('examHistory') || '[]');
+                    
+                    if (examHistory.length === 0) {
+                      return (
+                        <div className="text-center py-8">
+                          <span className="text-4xl mb-4 block">📝</span>
+                          <p className="text-gray-500 mb-2">No exams taken yet</p>
+                          <p className="text-sm text-gray-400">Complete some week evaluations to see your progress here</p>
+                        </div>
+                      );
+                    }
+                    
+                    const avgScore = Math.round(examHistory.reduce((sum, exam) => sum + exam.score, 0) / examHistory.length);
+                    
+                    return (
+                      <div>
+                        {/* Quick Stats */}
+                        <div className="grid grid-cols-3 gap-4 mb-6">
+                          <div className="bg-blue-50 p-3 rounded-lg text-center">
+                            <div className="text-xl font-bold text-blue-600">{examHistory.length}</div>
+                            <div className="text-xs text-blue-500">Total</div>
+                          </div>
+                          <div className="bg-green-50 p-3 rounded-lg text-center">
+                            <div className="text-xl font-bold text-green-600">{avgScore}%</div>
+                            <div className="text-xs text-green-500">Average</div>
+                          </div>
+                          <div className="bg-purple-50 p-3 rounded-lg text-center">
+                            <div className="text-xl font-bold text-purple-600">{examHistory.filter(e => e.passed).length}</div>
+                            <div className="text-xs text-purple-500">Passed</div>
+                          </div>
+                        </div>
+                        
+                        {/* History List */}
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                          {examHistory.slice().reverse().slice(0, 10).map((exam) => (
+                            <div key={exam.id} className="bg-gray-50 p-4 rounded-lg border hover:bg-gray-100 transition-colors">
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-medium text-sm text-gray-800 leading-tight">{exam.weekTitle}</h4>
+                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                  exam.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                }`}>
+                                  {exam.score}%
+                                </span>
+                              </div>
+                              <div className="flex justify-between text-xs text-gray-500">
+                                <span>📅 {exam.date}</span>
+                                <span>✅ {exam.correctAnswers}/{exam.totalQuestions} correct</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {examHistory.length > 10 && (
+                          <div className="text-center mt-4">
+                            <p className="text-xs text-gray-400">Showing last 10 exams</p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             ) : (
@@ -2921,6 +2987,8 @@ export default function HexpolTrainingForm() {
         )}
       </div>
       
+
+
       {/* Fullscreen Loading Overlay */}
       {isGenerating && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
