@@ -694,7 +694,31 @@ export default function HexpolTrainingForm() {
             completed: false,
             description: `${type} training resource for ${currentWeek.title}`
           });
-          console.log('Found resource without link:', { title, type });
+          console.log('✅ Found resource without link:', { title, type });
+        }
+        
+        // Detectar recursos con formato de lista con guión (- **tipo:** título)
+        const dashResourceMatch = line.match(/^\s*-\s*\*\*(video|pdf|interactive|Video|PDF|Interactive)\*\*:?\s*(.+)/i);
+        if (dashResourceMatch && currentWeek) {
+          const [, type, fullTitle] = dashResourceMatch;
+          // Limpiar título: remover comillas y extraer solo el título principal
+          let cleanTitle = fullTitle.trim();
+          if (cleanTitle.startsWith('"') && cleanTitle.includes('" -')) {
+            cleanTitle = cleanTitle.split('" -')[0].substring(1);
+          } else if (cleanTitle.includes(' - ')) {
+            cleanTitle = cleanTitle.split(' - ')[0];
+          }
+          
+          currentResources.push({
+            id: `${currentWeek.weekNumber}-${currentResources.length + 1}`,
+            title: cleanTitle.trim(),
+            type: type.toLowerCase(),
+            duration: '30 min',
+            url: null,
+            completed: false,
+            description: `${type} training resource for ${currentWeek.title}`
+          });
+          console.log('✅ Found dash resource:', { title: cleanTitle, type: type.toLowerCase() });
         }
       }
 
