@@ -898,7 +898,7 @@ export default function HexpolTrainingForm() {
       
       setChatMessages(prev => [...prev, botMessage]);
     }
-  }, [formData.fullName, formData.currentRole, formData.learningStyle, overallProgress, localMode, demoMode]);
+  }, [formData.fullName, formData.currentRole, formData.learningStyle, overallProgress]);
 
   // Función optimizada para enviar mensaje del chat
   const sendChatMessage = useCallback((e) => {
@@ -1272,7 +1272,7 @@ export default function HexpolTrainingForm() {
     } finally {
       setIsGenerating(false);
     }
-  }, [apiKey, demoMode, localMode, formData]);
+  }, [formData]);
 
       // Optimized function to calculate estimated cost
   const getEstimatedCost = useCallback(() => {
@@ -1283,14 +1283,7 @@ export default function HexpolTrainingForm() {
     return (inputCost + outputCost).toFixed(4);
   }, []);
 
-  // Función optimizada para manejar la configuración de la API
-  const handleApiKeySet = useCallback((key) => {
-    setApiKey(key);
-    setShowApiConfig(false);
-    if (key) {
-      setDemoMode(false);
-    }
-  }, []);
+
 
   // Función para parsear el plan de entrenamiento del markdown
   const parseTrainingPlanMarkdown = useCallback((markdown) => {
