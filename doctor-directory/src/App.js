@@ -517,7 +517,7 @@ export default function HexpolTrainingForm() {
     {
       id: 1,
       type: 'bot',
-      message: '¡Hola! Soy tu tutor virtual de TechFlow Academy. Estoy aquí para ayudarte con tu capacitación. ¿En qué puedo asistirte hoy?',
+      message: 'Hello! I\'m your virtual tutor from TechFlow Academy. I\'m here to help you with your training. How can I assist you today?',
       timestamp: new Date()
     }
   ]);
@@ -1264,7 +1264,7 @@ export default function HexpolTrainingForm() {
 
     setIsGenerating(true);
     setGenerationError(null);
-    setGenerationStatus(demoMode ? 'Generando plan de demostración...' : 'Iniciando generación...');
+          setGenerationStatus(demoMode ? 'Generating demonstration plan...' : 'Starting generation...');
     
     try {
       // Guardar datos del formulario en localStorage para uso posterior
@@ -1445,12 +1445,12 @@ export default function HexpolTrainingForm() {
   // Función para manejar el guardado del trabajo del canvas
   const handleCanvasSave = useCallback((canvasData) => {
     console.log('Canvas work saved:', canvasData);
-    // Aquí podrías guardar el trabajo en localStorage o enviarlo a un servidor
+    // Here you could save the work to localStorage or send it to a server
     const savedWorks = JSON.parse(localStorage.getItem('interactiveWorks') || '[]');
     savedWorks.push(canvasData);
     localStorage.setItem('interactiveWorks', JSON.stringify(savedWorks));
     
-    // Mostrar mensaje de éxito
+    // Show success message
     alert('Your work has been saved successfully!');
   }, []);
 
@@ -1872,7 +1872,7 @@ export default function HexpolTrainingForm() {
                   } else {
                     const model = await detectAvailableModels();
                     console.log('Selected model:', model);
-                    alert(`Modelo seleccionado: ${model}`);
+                    alert(`Selected model: ${model}`);
                   }
                 } catch (error) {
                   console.error('Error detecting models:', error);
@@ -1949,10 +1949,10 @@ export default function HexpolTrainingForm() {
 
         {activeTab === 'form' ? (
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-            {/* Formulario Principal - 3 columnas */}
+            {/* Main Form - 3 columns */}
             <div className="xl:col-span-3">
               <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg overflow-hidden">
-            {/* Sección 1: Información General */}
+            {/* Section 1: General Information */}
             <div className="border-b border-gray-200 p-6">
               <div className="flex items-center mb-4">
                 <FaUser className="text-blue-600 mr-2" />
@@ -2078,7 +2078,7 @@ export default function HexpolTrainingForm() {
               </div>
             </div>
 
-            {/* Sección 2: Áreas Técnicas */}
+            {/* Section 2: Technical Areas */}
             <div className="border-b border-gray-200 p-6">
               <div className="flex items-center mb-4">
                 <FaTools className="text-blue-600 mr-2" />
@@ -2120,7 +2120,7 @@ export default function HexpolTrainingForm() {
               </div>
             </div>
 
-            {/* Sección 3: Estilo de Aprendizaje */}
+            {/* Section 3: Learning Style */}
             <div className="border-b border-gray-200 p-6">
               <div className="flex items-center mb-4">
                 <FaGraduationCap className="text-blue-600 mr-2" />
@@ -2150,7 +2150,7 @@ export default function HexpolTrainingForm() {
               </div>
             </div>
 
-            {/* Sección 4: Idioma */}
+            {/* Section 4: Language */}
             <div className="border-b border-gray-200 p-6">
               <div className="flex items-center mb-4">
                 <FaGlobe className="text-blue-600 mr-2" />
@@ -2159,8 +2159,8 @@ export default function HexpolTrainingForm() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                  "Spanish",
                   "English",
+                  "Spanish",
                   "Spanish with technical terms in English"
                 ].map((lang) => (
                   <label key={lang} className="flex items-start bg-gray-50 p-4 rounded-lg">
@@ -2178,7 +2178,7 @@ export default function HexpolTrainingForm() {
               </div>
             </div>
 
-            {/* Sección 5: Disponibilidad de Tiempo */}
+            {/* Section 5: Time Availability */}
             <div className="border-b border-gray-200 p-6">
               <div className="flex items-center mb-4">
                 <FaClock className="text-blue-600 mr-2" />
@@ -2222,7 +2222,7 @@ export default function HexpolTrainingForm() {
               </div>
             </div>
 
-            {/* Sección 6: Objetivo de Desarrollo */}
+            {/* Section 6: Development Goal */}
             <div className="border-b border-gray-200 p-6">
               <div className="flex items-center mb-4">
                 <FaBullseye className="text-blue-600 mr-2" />
@@ -2244,7 +2244,7 @@ export default function HexpolTrainingForm() {
               </div>
             </div>
 
-            {/* Sección 7: Equipos Utilizados */}
+            {/* Section 7: Equipment Used */}
             <div className="border-b border-gray-200 p-6">
               <div className="flex items-center mb-4">
                 <FaTools className="text-blue-600 mr-2" />

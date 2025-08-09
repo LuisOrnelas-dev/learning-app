@@ -1,10 +1,10 @@
 import { OpenAIService } from './openaiService';
 
 export class ContentGenerationService {
-  // Generar contenido real basado en el título
+  // Generate real content based on title
   static async generateRealContent(title, type, topic, formData) {
     try {
-      console.log(`Generando contenido real para: ${title} (${type})`);
+      console.log(`Generating real content for: ${title} (${type})`);
       
       switch (type) {
         case 'pdf':
@@ -17,12 +17,12 @@ export class ContentGenerationService {
           return await this.generatePDFContent(title, topic, formData);
       }
     } catch (error) {
-      console.error('Error generando contenido:', error);
+      console.error('Error generating content:', error);
       return null;
     }
   }
 
-  // Generar contenido de PDF
+  // Generate PDF content
   static async generatePDFContent(title, topic, formData) {
     const prompt = `Create a comprehensive technical document for: "${title}"
 
@@ -65,6 +65,7 @@ Make the content:
 - Include relevant safety information
 - Suitable for ${formData.learningStyle} learners
 - Professional and comprehensive
+- **CRITICAL: Write everything in English language**
 
 Format as a proper technical document with clear sections and subsections.`;
 
@@ -83,7 +84,7 @@ Format as a proper technical document with clear sections and subsections.`;
     }
   }
 
-  // Generar contenido de video (transcript + descripción)
+  // Generate video content (transcript + description)
   static async generateVideoContent(title, topic, formData) {
     const prompt = `Create a comprehensive video script and description for: "${title}"
 
@@ -111,6 +112,7 @@ Make the content:
 - Suitable for ${formData.learningStyle} learners
 - Focused on practical demonstrations
 - Professional and comprehensive
+- **CRITICAL: Write everything in English language**
 
 Format as a structured video script with clear sections.`;
 
@@ -129,7 +131,7 @@ Format as a structured video script with clear sections.`;
     }
   }
 
-  // Generar contenido interactivo
+  // Generate interactive content
   static async generateInteractiveContent(title, topic, formData) {
     const prompt = `Create an interactive training module for: "${title}"
 
@@ -163,6 +165,7 @@ Make the content:
 - Suitable for ${formData.learningStyle} learners
 - Focused on practical application
 - Include assessment and feedback
+- **CRITICAL: Write everything in English language**
 
 Format as an interactive training module with clear sections.`;
 
@@ -181,7 +184,7 @@ Format as an interactive training module with clear sections.`;
     }
   }
 
-  // Generar instrucciones para canvas interactivo
+  // Generate instructions for interactive canvas
   static generateInteractiveInstructions(title, topic, formData) {
     const instructions = [];
     

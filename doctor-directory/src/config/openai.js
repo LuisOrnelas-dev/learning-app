@@ -1,9 +1,9 @@
-// Configuración de OpenAI
+// OpenAI Configuration
 export const OPENAI_CONFIG = {
-  // Modelo por defecto
+  // Default model
   DEFAULT_MODEL: 'gpt-4',
   
-  // Configuración de prompts
+  // Prompts configuration
   PROMPTS: {
     TRAINING_PLAN: {
       SYSTEM: "You are an expert technical training consultant specializing in industrial maintenance and manufacturing. Create detailed, personalized training plans that are practical and actionable.",
@@ -22,13 +22,13 @@ export const OPENAI_CONFIG = {
     }
   },
   
-  // Configuración de rate limiting
+  // Rate limiting configuration
   RATE_LIMIT: {
     REQUESTS_PER_MINUTE: 10,
     REQUESTS_PER_HOUR: 100
   },
   
-  // Configuración de fallback
+  // Fallback configuration
   FALLBACK_RESPONSES: {
     CHATBOT: [
       "I understand your question. I'll help you find the information you need.",
@@ -40,7 +40,7 @@ export const OPENAI_CONFIG = {
   }
 };
 
-// Función para validar API key
+// Function to validate API key
 export const validateApiKey = (apiKey) => {
   if (!apiKey) return false;
   if (!apiKey.startsWith('sk-')) return false;
@@ -48,7 +48,7 @@ export const validateApiKey = (apiKey) => {
   return true;
 };
 
-// Función para obtener la configuración del modelo
+// Function to get model configuration
 export const getModelConfig = (modelType = 'DEFAULT_MODEL') => {
   const model = process.env.REACT_APP_OPENAI_MODEL || OPENAI_CONFIG.DEFAULT_MODEL;
   const promptConfig = OPENAI_CONFIG.PROMPTS[modelType] || OPENAI_CONFIG.PROMPTS.TRAINING_PLAN;

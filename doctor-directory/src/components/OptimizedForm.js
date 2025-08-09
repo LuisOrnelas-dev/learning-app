@@ -132,8 +132,8 @@ const LearningStyle = memo(({ formData, handleChange }) => {
 
 const LanguagePreference = memo(({ formData, handleChange }) => {
   const languages = useMemo(() => [
-    "Spanish",
     "English",
+    "Spanish",
     "Spanish with technical terms in English"
   ], []);
 

@@ -78,7 +78,8 @@ Your role is to:
 Current student context: ${context}
 
 IMPORTANT RULES:
-- Always respond in English
+- ALWAYS respond in English by default
+- If the user writes in Spanish, respond in Spanish
 - Be professional but friendly
 - Provide practical, actionable advice
 - Reference specific training content when relevant
@@ -95,7 +96,7 @@ Respond as a knowledgeable technical instructor who genuinely wants to help the 
     });
   }
 
-  // Generar contenido directamente con un prompt personalizado
+  // Generate content directly with a custom prompt
   static async generateContentDirectly(prompt) {
     return callOpenAIProxy({
       messages: [
@@ -165,7 +166,7 @@ Please create a ${adjustedWeeks}-week training plan with the following structure
    - If Kinesthetic: Emphasize hands-on activities, interactive simulations, and practical exercises
    - If Auditory: Include audio explanations, video lectures, and verbal instructions
 4. **Schedule Preference:** Consider ${formData.preferredSchedule} availability
-5. **Language:** Provide content in ${formData.language}
+5. **Language:** Provide all content in English (regardless of user language preference for consistency)
 6. **Progressive Learning:** Build from current skill levels to advanced
 
 For each week, include:
@@ -232,8 +233,9 @@ Continue for all ${adjustedWeeks} weeks, focusing on the development goal: "${fo
   ${formData.knowledgeSource === 'internal' ? '- Use internal company resources when available' : ''}
   ${formData.knowledgeSource === 'public' ? '- Use external/public resources from the web' : ''}
   ${formData.knowledgeSource === 'both' ? '- Combine internal and external resources appropriately' : ''}
-- Provide content in ${formData.language}
 - Consider ${formData.preferredSchedule} schedule preferences
+
+**CRITICAL: Provide ALL content in English language for consistency and international standards.**
 
 Make each week progressive, building on previous knowledge and current skill levels.`;
   }
@@ -253,6 +255,8 @@ Please create:
 3. Recommended activities (videos, hands-on, reading, etc.)
 4. Assessment methods
 5. Success criteria
+
+**IMPORTANT: Provide all content in English language.**
 
 Format the response in Markdown.`;
   }

@@ -63,8 +63,8 @@ export class ResourceEnrichmentService {
         
         console.log(`Enriquecido con recurso local: ${title} -> ${bestMatch.url} (tipo original: ${type}, tipo encontrado: ${bestMatch.type})`);
       } else {
-        // GENERAR CONTENIDO REAL cuando no se encuentra recurso
-        console.log(`Generando contenido real para: ${title} (${type})`);
+          // GENERATE REAL CONTENT when resource is not found
+  console.log(`Generating real content for: ${title} (${type})`);
         
         try {
           // Extraer tema del título
@@ -88,9 +88,9 @@ export class ResourceEnrichmentService {
             }
           }
           
-          // Para PDFs, SIEMPRE generar contenido real
+          // For PDFs, ALWAYS generate real content
           if (type === 'pdf') {
-            console.log(`Generando contenido real para PDF: ${title}`);
+            console.log(`Generating real content for PDF: ${title}`);
             const generatedContent = await ContentGenerationService.generateRealContent(title, type, foundTopic, formData);
             
             if (generatedContent) {
@@ -103,8 +103,8 @@ export class ResourceEnrichmentService {
             }
           }
           
-          // Si no se encontró en internet, generar contenido
-          console.log(`Generando contenido real para: ${title} (${type})`);
+          // If not found on internet, generate content
+          console.log(`Generating real content for: ${title} (${type})`);
           const generatedContent = await ContentGenerationService.generateRealContent(title, type, foundTopic, formData);
           
           if (generatedContent) {
@@ -125,7 +125,7 @@ export class ResourceEnrichmentService {
             }
           }
         } catch (error) {
-          console.error('Error generando contenido:', error);
+          console.error('Error generating content:', error);
           // FALLBACK FINAL: Asignar un recurso genérico
           const fallbackResource = resourceList.find(r => r.type === type) || resourceList[0];
           if (fallbackResource) {
@@ -331,7 +331,7 @@ export class ResourceEnrichmentService {
       return match;
     };
     
-    // Búsqueda según configuración del formulario
+            // Search according to form configuration
     if (formData?.knowledgeSource === 'internal') {
       const internalMatch = searchInResources(InternalResourceService.getAllResources());
       return internalMatch?.url || null;

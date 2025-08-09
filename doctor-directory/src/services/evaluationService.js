@@ -1,6 +1,6 @@
 // Service to handle evaluations
 export class EvaluationService {
-  // Generar preguntas específicas basadas en el contenido de la semana
+  // Generate specific questions based on week content
   static generateWeekQuestions(weekTitle, weekContent) {
     const allQuestions = [];
     const usedQuestions = new Set(); // Para evitar duplicados
