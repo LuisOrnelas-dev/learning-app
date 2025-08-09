@@ -1727,7 +1727,6 @@ export default function HexpolTrainingForm() {
               : "Your personalized training plan"}
           </p>
         </div>
-        </div>
 
         {/* Sistema de pestañas */}
         <div className="flex border-b border-gray-200 mb-6">
@@ -2147,7 +2146,7 @@ export default function HexpolTrainingForm() {
                     ) : "Generate Plan"}
                   </button>
                   <p className="text-xs text-gray-500 mt-1">
-                    {localMode ? 'Local AI - No cost' : demoMode ? 'Demo Mode - No cost' : `Estimated cost: ~$${getEstimatedCost()}`}
+                    Estimated cost: ~$${getEstimatedCost()}
                   </p>
                 </div>
               </div>
@@ -2590,7 +2589,7 @@ export default function HexpolTrainingForm() {
                     </button>
                     <button
                       onClick={() => generateAdditionalContent()}
-                      disabled={!apiKey || isGenerating}
+                      disabled={isGenerating}
                       className="flex items-center px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                     >
                       <FaRobot className="mr-1" />
