@@ -13,8 +13,8 @@ const TheoreticalEvaluation = ({ module, onComplete, formData }) => {
   // Generate questions based on the module using the new service
   const questions = useMemo(() => {
     const { EvaluationService } = require('../services/evaluationService');
-    return EvaluationService.generateWeekQuestions(module.title, module.resources || []);
-  }, [module.title, module.resources]);
+    return EvaluationService.generateWeekQuestions(module.title, module.resources || [], formData);
+  }, [module.title, module.resources, formData]);
 
   const calculateScore = useCallback(() => {
     let correct = 0;

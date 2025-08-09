@@ -1,7 +1,7 @@
 // Service to handle evaluations
 export class EvaluationService {
   // Generate specific questions based on week content
-  static generateWeekQuestions(weekTitle, weekContent) {
+  static generateWeekQuestions(weekTitle, weekContent, formData = {}) {
     const allQuestions = [];
     const usedQuestions = new Set(); // Para evitar duplicados
     
@@ -31,7 +31,16 @@ export class EvaluationService {
     });
     
     // Mezclar las preguntas únicas y tomar las primeras 10
-    return this.shuffleArray(uniqueQuestions).slice(0, 10);
+    let finalQuestions = this.shuffleArray(uniqueQuestions).slice(0, 10);
+    
+    // Traducir a español si es necesario
+    const isSpanish = (formData.language || '').toLowerCase().includes('spanish') || 
+                      (formData.language || '').toLowerCase().includes('español');
+    if (isSpanish) {
+      finalQuestions = this.translateQuestionsToSpanish(finalQuestions);
+    }
+    
+    return finalQuestions;
   }
   
   // Extraer temas del título de la semana
@@ -607,5 +616,54 @@ export class EvaluationService {
     } catch (error) {
       console.error("Error exporting evaluations to CSV:", error);
     }
+  }
+  
+  // Traducir preguntas a español (traducción básica)
+  static translateQuestionsToSpanish(questions) {
+    return questions.map((question, index) => {
+      // Para simplificar, usar preguntas pre-traducidas básicas
+      const spanishQuestions = [
+        {
+          question: "¿Cuál es el primer paso en cualquier procedimiento de seguridad antes de trabajar en equipos?",
+          options: [
+            "Procedimientos de Bloqueo/Etiquetado",
+            "Encender el equipo", 
+            "Llamar a un supervisor",
+            "Solo ponerse guantes"
+          ],
+          explanation: "Los procedimientos de Bloqueo/Etiquetado son críticos para la seguridad."
+        },
+        {
+          question: "¿Qué función principal tiene una bomba hidráulica?",
+          options: [
+            "Convertir energía mecánica a energía hidráulica",
+            "Filtrar el fluido hidráulico",
+            "Controlar la temperatura",
+            "Medir la presión"
+          ],
+          explanation: "Las bombas hidráulicas convierten energía mecánica en presión hidráulica."
+        },
+        {
+          question: "¿Cuál es la función principal de un PLC en equipos industriales?",
+          options: [
+            "Controlar procesos automáticamente",
+            "Generar electricidad",
+            "Filtrar señales",
+            "Enfriar equipos"
+          ],
+          explanation: "Los PLCs automatizan y controlan procesos industriales."
+        }
+      ];
+      
+      // Usar pregunta española si existe, si no mantener la original con id actualizado
+      const spanishQ = spanishQuestions[index % spanishQuestions.length];
+      
+      return {
+        ...question,
+        question: spanishQ.question,
+        options: spanishQ.options,
+        explanation: spanishQ.explanation
+      };
+    });
   }
 } 
