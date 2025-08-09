@@ -39,6 +39,10 @@ export class OpenAIService {
     const prompt = this.buildTrainingPlanPrompt(formData);
     console.log('=== PROMPT BEING SENT TO API ===');
     console.log('FormData received:', formData);
+    console.log('Language field:', formData.language);
+    console.log('Equipment field:', formData.equipmentUsed);
+    console.log('Learning style field:', formData.learningStyle);
+    console.log('Development goal field:', formData.developmentGoal);
     console.log('Prompt length:', prompt.length);
     console.log('FULL PROMPT:', prompt);
     console.log('=== END PROMPT DEBUG ===');
@@ -146,8 +150,9 @@ Respond as a knowledgeable instructor who understands both the technical content
     
     // Determine content language based on preference
     const getContentLanguage = () => {
-      if (formData.language === 'spanish') return 'Spanish';
-      if (formData.language === 'spanish with technical terms in english') return 'Spanish with technical terms in English';
+      const lang = (formData.language || '').toLowerCase();
+      if (lang.includes('spanish') && lang.includes('english')) return 'Spanish with technical terms in English';
+      if (lang.includes('spanish') || lang.includes('español')) return 'Spanish';
       return 'English';
     };
 
@@ -189,32 +194,29 @@ Respond as a knowledgeable instructor who understands both the technical content
 
     return `Create a HIGHLY PERSONALIZED industrial technical training plan for ${formData.fullName} (${formData.currentRole}, ${formData.position}) at TechFlow Academy.
 
-🚨 **ABSOLUTE PRIORITY - DEVELOPMENT GOAL FOCUS:**
-The ENTIRE training plan must be centered around: "${formData.developmentGoal}"
-- Every single week must be designed to advance toward this specific goal
-- Use the exact keywords and concepts mentioned in the development goal
-- Structure the progression to build skills specifically needed for this goal
-- ALL content must be relevant and directly applicable to achieving: "${formData.developmentGoal}"
+🚨 **PRIORITY ORDER (FOLLOW THIS EXACT ORDER):**
 
-**CRITICAL PERSONALIZATION REQUIREMENTS:**
+1️⃣ **PRIMARY FOCUS - DEVELOPMENT GOAL:**
+"${formData.developmentGoal}"
+- This is the MAIN objective - every week must advance toward this goal
+- Use exact keywords and concepts from this goal
+- All content must be directly applicable to achieving this specific goal
 
-🎯 **ROLE-SPECIFIC CONTENT:**
+2️⃣ **SECONDARY FOCUS - EQUIPMENT SPECIALIZATION:**
+Primary Equipment: ${formData.equipmentUsed.join(', ') || 'Industrial equipment'}
+- Tailor all training to this specific equipment
+- Include equipment-specific troubleshooting, maintenance, and operation
+- Use brand-specific procedures and terminology
+
+3️⃣ **TERTIARY FOCUS - ROLE REQUIREMENTS:**
 - Current Role: ${formData.currentRole}
 - Position: ${formData.position}
-- Development Goal: "${formData.developmentGoal}"
-- Design ALL content specifically for ${formData.currentRole} responsibilities and ${formData.position} requirements
+- Adapt content to match day-to-day responsibilities of this role
 
-📊 **SKILLS PRIORITY (Focus on gaps first):**
-Priority Skills to Develop: ${getPrioritySkills()}
-Current Skill Levels:
-- Mechanical: ${formData.mechanical} | Electrical: ${formData.electrical}
-- Hydraulics: ${formData.hydraulics} | Pneumatics: ${formData.pneumatics}
-- Controls: ${formData.controls} | Safety/EHS: ${formData.safetyEhs}
-
-🛠️ **EQUIPMENT-SPECIFIC TRAINING:**
-Primary Equipment: ${formData.equipmentUsed.join(', ') || 'General industrial equipment'}
-- Create equipment-specific modules for: ${formData.equipmentUsed.join(', ')}
-- Include troubleshooting, maintenance, and operation procedures
+4️⃣ **SUPPORTING SKILLS (ONLY as needed for the above goals):**
+Current Skill Levels: Mechanical(${formData.mechanical}), Electrical(${formData.electrical}), Hydraulics(${formData.hydraulics}), Pneumatics(${formData.pneumatics}), Controls(${formData.controls}), Safety/EHS(${formData.safetyEhs})
+- Use skills ONLY to support the development goal and equipment focus
+- Don't create generic skill training - focus on goal-specific applications
 
 ⏰ **TIME STRUCTURE:**
 - Target Duration: ${targetMonths} month(s) = ${adjustedWeeks} weeks EXACTLY
@@ -268,10 +270,10 @@ Create EXACTLY ${adjustedWeeks} weeks with this format:
 - **[Type]:** [Title] - [Description relating to ${formData.equipmentUsed.join(', ')}]
 
 **CRITICAL REQUIREMENTS:**
-1. **Week Progression:** Start with ${getPrioritySkills()}, progress to advanced topics
-2. **Equipment Focus:** Each week must relate to ${formData.equipmentUsed.join(', ')} when possible
+1. **DEVELOPMENT GOAL PRIORITY:** Every week must DIRECTLY advance toward: "${formData.developmentGoal}" - this is the PRIMARY focus
+2. **Equipment Focus:** All content must relate to ${formData.equipmentUsed.join(', ') || 'the specified equipment'} when possible
 3. **Role Relevance:** All content must be relevant to ${formData.currentRole} and ${formData.position}
-4. **Development Goal:** Every week should progress toward: "${formData.developmentGoal}"
+4. **Week Progression:** Build systematically toward the development goal, not general skills
 5. **Resource Types:** Follow the learning style breakdown above STRICTLY
 6. **Language:** ALL content in ${getContentLanguage()}
 
