@@ -52,7 +52,7 @@ export class OpenAIService {
         { role: "user", content: prompt }
       ],
       model: "gpt-4",
-      temperature: 0.3,
+      temperature: 0.1,
       max_tokens: 4000
     });
     console.log('=== API RESPONSE ===');
@@ -277,33 +277,55 @@ Create EXACTLY ${adjustedWeeks} weeks with this format:
 5. **RESOURCE TYPES - MANDATORY DISTRIBUTION:** ${getResourceTypes()}
 6. **Language:** ALL content in ${getContentLanguage()}
 
-🚨 **LEARNING STYLE ENFORCEMENT:**
+🚨 **CRITICAL: LEARNING STYLE ENFORCEMENT - FOLLOW EXACTLY:**
+
 ${formData.learningStyle.includes('Reading') ? `
-EACH WEEK MUST HAVE:
-- 2-3 PDFs/Documents/Manuals (this is the MAIN resource type)
-- Maximum 1 Video (only if absolutely necessary for complex demonstrations)
-- NO Interactive resources (except for final assessments)
-NEVER create equal amounts of each type - PDFs must dominate!` : ''}
+📚 READING LEARNER DETECTED - MANDATORY RESOURCE DISTRIBUTION:
+⚠️  EACH WEEK MUST HAVE EXACTLY:
+- PDF: 2-3 documents (80% of resources)
+- Video: 0-1 video maximum (only if essential)
+- Interactive: 0 modules (reading learners prefer text)
+🚫 DO NOT CREATE: Equal amounts of each type
+✅ EXAMPLE WEEK: PDF, PDF, PDF or PDF, PDF, Video` : ''}
 
 ${formData.learningStyle.includes('Visual') ? `
-EACH WEEK MUST HAVE:
-- 2-3 Videos with visual demonstrations
-- 1 Interactive visual tool/simulation
-- Maximum 1 PDF (only for reference)` : ''}
+👁️ VISUAL LEARNER DETECTED - MANDATORY RESOURCE DISTRIBUTION:
+⚠️  EACH WEEK MUST HAVE EXACTLY:
+- Video: 2-3 videos (70% of resources) 
+- Interactive: 1 visual simulation
+- PDF: 0-1 document maximum
+🚫 DO NOT CREATE: Multiple PDFs or equal distribution
+✅ EXAMPLE WEEK: Video, Video, Interactive or Video, Video, Video` : ''}
 
 ${formData.learningStyle.includes('Auditory') ? `
-EACH WEEK MUST HAVE:
-- 2-3 Videos with strong audio explanations
-- 1 PDF as transcript/reference
-- Maximum 1 Interactive (audio-guided)` : ''}
+🎧 AUDITORY LEARNER DETECTED - MANDATORY RESOURCE DISTRIBUTION:
+⚠️  EACH WEEK MUST HAVE EXACTLY:
+- Video: 2-3 videos with audio explanations (70% of resources)
+- PDF: 1 transcript/reference maximum
+- Interactive: 0-1 audio-guided module
+🚫 DO NOT CREATE: Multiple PDFs or equal distribution
+✅ EXAMPLE WEEK: Video, Video, Video or Video, Video, PDF` : ''}
 
 ${formData.learningStyle.includes('Kinesthetic') ? `
-EACH WEEK MUST HAVE:
-- 2-3 Interactive hands-on exercises/simulations
-- 1 Video showing step-by-step procedures
-- Maximum 1 PDF (quick reference only)` : ''}
+🤝 KINESTHETIC LEARNER DETECTED - MANDATORY RESOURCE DISTRIBUTION:
+⚠️  EACH WEEK MUST HAVE EXACTLY:
+- Interactive: 2-3 hands-on simulations (70% of resources)
+- Video: 1 step-by-step demonstration
+- PDF: 0-1 quick reference maximum
+🚫 DO NOT CREATE: Multiple PDFs or equal distribution
+✅ EXAMPLE WEEK: Interactive, Interactive, Interactive or Interactive, Interactive, Video` : ''}
 
-Continue for all ${adjustedWeeks} weeks, ensuring each week builds toward the development goal while addressing the specific needs of a ${formData.currentRole} working with ${formData.equipmentUsed.join(', ')}.`;
+Continue for all ${adjustedWeeks} weeks, ensuring each week builds toward the development goal while addressing the specific needs of a ${formData.currentRole} working with ${formData.equipmentUsed.join(', ')}.
+
+🚨🚨🚨 FINAL REMINDER - LEARNING STYLE ENFORCEMENT 🚨🚨🚨
+LEARNING STYLE: ${formData.learningStyle}
+${formData.learningStyle.includes('Reading') ? 'MUST PRIORITIZE: PDFs and documents - AVOID too many videos' : ''}
+${formData.learningStyle.includes('Visual') ? 'MUST PRIORITIZE: Videos and visual content - LIMIT PDFs' : ''}
+${formData.learningStyle.includes('Auditory') ? 'MUST PRIORITIZE: Videos with audio - LIMIT PDFs' : ''}
+${formData.learningStyle.includes('Kinesthetic') ? 'MUST PRIORITIZE: Interactive modules - LIMIT videos and PDFs' : ''}
+
+DO NOT CREATE THE SAME MIX EVERY WEEK (1 PDF + 1 Video + 1 Interactive).
+RESPECT THE LEARNING STYLE PREFERENCE ABOVE ALL ELSE!`;
   }
 
   static buildContentPrompt(module, formData) {
