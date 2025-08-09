@@ -269,13 +269,39 @@ Create EXACTLY ${adjustedWeeks} weeks with this format:
 - **[Type]:** [Title] - [Description tailored to ${formData.currentRole}]
 - **[Type]:** [Title] - [Description relating to ${formData.equipmentUsed.join(', ')}]
 
-**CRITICAL REQUIREMENTS:**
+**CRITICAL REQUIREMENTS - FOLLOW EXACTLY:**
 1. **DEVELOPMENT GOAL PRIORITY:** Every week must DIRECTLY advance toward: "${formData.developmentGoal}" - this is the PRIMARY focus
 2. **Equipment Focus:** All content must relate to ${formData.equipmentUsed.join(', ') || 'the specified equipment'} when possible
 3. **Role Relevance:** All content must be relevant to ${formData.currentRole} and ${formData.position}
 4. **Week Progression:** Build systematically toward the development goal, not general skills
-5. **Resource Types:** Follow the learning style breakdown above STRICTLY
+5. **RESOURCE TYPES - MANDATORY DISTRIBUTION:** ${getResourceTypes()}
 6. **Language:** ALL content in ${getContentLanguage()}
+
+🚨 **LEARNING STYLE ENFORCEMENT:**
+${formData.learningStyle.includes('Reading') ? `
+EACH WEEK MUST HAVE:
+- 2-3 PDFs/Documents/Manuals (this is the MAIN resource type)
+- Maximum 1 Video (only if absolutely necessary for complex demonstrations)
+- NO Interactive resources (except for final assessments)
+NEVER create equal amounts of each type - PDFs must dominate!` : ''}
+
+${formData.learningStyle.includes('Visual') ? `
+EACH WEEK MUST HAVE:
+- 2-3 Videos with visual demonstrations
+- 1 Interactive visual tool/simulation
+- Maximum 1 PDF (only for reference)` : ''}
+
+${formData.learningStyle.includes('Auditory') ? `
+EACH WEEK MUST HAVE:
+- 2-3 Videos with strong audio explanations
+- 1 PDF as transcript/reference
+- Maximum 1 Interactive (audio-guided)` : ''}
+
+${formData.learningStyle.includes('Kinesthetic') ? `
+EACH WEEK MUST HAVE:
+- 2-3 Interactive hands-on exercises/simulations
+- 1 Video showing step-by-step procedures
+- Maximum 1 PDF (quick reference only)` : ''}
 
 Continue for all ${adjustedWeeks} weeks, ensuring each week builds toward the development goal while addressing the specific needs of a ${formData.currentRole} working with ${formData.equipmentUsed.join(', ')}.`;
   }
