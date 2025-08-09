@@ -1474,7 +1474,7 @@ export default function HexpolTrainingForm() {
         const { ContentGenerationService } = await import('./services/contentGenerationService');
         
         try {
-          const generatedContent = await ContentGenerationService.generateRealContent(title, type);
+          const generatedContent = await ContentGenerationService.generateRealContent(title, type, foundTopic, formData);
           if (generatedContent && generatedContent.content) {
             console.log('=== CONTENT GENERATION SUCCESS ===');
             console.log('Content generated successfully, length:', generatedContent.content.length);
