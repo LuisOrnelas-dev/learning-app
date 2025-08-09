@@ -1291,6 +1291,13 @@ export default function HexpolTrainingForm() {
     let currentResources = [];
 
     for (const line of lines) {
+      // Log todas las líneas que podrían ser recursos para debug
+      if (line.includes('**') && (line.includes('video') || line.includes('pdf') || line.includes('interactive') || 
+          line.includes('Video') || line.includes('PDF') || line.includes('Interactive') ||
+          line.includes('manual') || line.includes('Manual') || line.includes('documento') || line.includes('módulo'))) {
+        console.log('🔍 DEBUG: Processing potential resource line:', line);
+      }
+      
       // Detectar semanas (en inglés "Week" o español "Semana")
       if (line.startsWith('## Week') || line.startsWith('## Semana')) {
         if (currentWeek) {
@@ -1328,14 +1335,21 @@ export default function HexpolTrainingForm() {
         console.log('Found resource with link:', resource);
       }
       
-      // Detectar recursos sin enlaces (formato simple)
-      const resourceNoLinkMatch = line.match(/\*\*(video|pdf|interactive)\*\*:?\s*([^\n]+)/);
+      // Detectar recursos sin enlaces (formato simple) - incluye mayúsculas y alternativas
+      const resourceNoLinkMatch = line.match(/\*\*(video|pdf|interactive|Video|PDF|Interactive|manual|Manual|documento|Documento|módulo|Módulo)\*\*:?\s*([^\n]+)/i);
       if (resourceNoLinkMatch && currentWeek) {
+        // Normalizar tipo a lowercase
+        let normalizedType = resourceNoLinkMatch[1].toLowerCase();
+        if (normalizedType.includes('manual') || normalizedType.includes('documento')) {
+          normalizedType = 'pdf';
+        } else if (normalizedType.includes('módulo')) {
+          normalizedType = 'interactive';
+        }
         const [, type, title] = resourceNoLinkMatch;
         const resource = {
           id: `${currentWeek.weekNumber}-${currentResources.length + 1}`,
           title: title.trim(),
-          type: type.toLowerCase(),
+          type: normalizedType,
           duration: '30 min',
           url: null, // Sin URL por ahora
           completed: false,
@@ -1345,14 +1359,21 @@ export default function HexpolTrainingForm() {
         console.log('Found resource without link:', resource);
       }
       
-      // Detectar recursos con formato diferente (con guiones)
-      const resourceDashMatch = line.match(/^\s*-\s*\*\*(video|pdf|interactive)\*\*:?\s*([^\n]+)/);
+      // Detectar recursos con formato diferente (con guiones) - incluye mayúsculas y alternativas
+      const resourceDashMatch = line.match(/^\s*-\s*\*\*(video|pdf|interactive|Video|PDF|Interactive|manual|Manual|documento|Documento|módulo|Módulo)\*\*:?\s*([^\n]+)/i);
       if (resourceDashMatch && currentWeek) {
+        // Normalizar tipo a lowercase
+        let normalizedType = resourceDashMatch[1].toLowerCase();
+        if (normalizedType.includes('manual') || normalizedType.includes('documento')) {
+          normalizedType = 'pdf';
+        } else if (normalizedType.includes('módulo')) {
+          normalizedType = 'interactive';
+        }
         const [, type, title] = resourceDashMatch;
         const resource = {
           id: `${currentWeek.weekNumber}-${currentResources.length + 1}`,
           title: title.trim(),
-          type: type.toLowerCase(),
+          type: normalizedType,
           duration: '30 min',
           url: null,
           completed: false,
@@ -1375,7 +1396,9 @@ export default function HexpolTrainingForm() {
     
     // Si no se encontraron recursos, crear recursos por defecto
     if (weeks.length > 0 && weeks.every(week => week.resources.length === 0)) {
-      console.log('No resources found, creating default resources...');
+      console.log('⚠️ WARNING: No resources found in GPT response, creating default resources...');
+      console.log('🔍 DEBUG: Full markdown content that failed to parse:');
+      console.log(markdown);
       weeks.forEach(week => {
         week.resources = [
           {
