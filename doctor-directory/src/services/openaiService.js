@@ -40,17 +40,22 @@ export class OpenAIService {
     console.log('=== PROMPT BEING SENT TO API ===');
     console.log('FormData received:', formData);
     console.log('Prompt length:', prompt.length);
-    console.log('First 500 characters of prompt:', prompt.substring(0, 500));
+    console.log('FULL PROMPT:', prompt);
     console.log('=== END PROMPT DEBUG ===');
-    return callOpenAIProxy({
+    const response = await callOpenAIProxy({
       messages: [
-        { role: "system", content: "You are an expert technical training consultant specializing in industrial maintenance and manufacturing. Create detailed, personalized training plans that are practical and actionable." },
+        { role: "system", content: "You are an expert technical training consultant specializing in industrial maintenance and manufacturing. You MUST follow ALL instructions exactly as specified. Create detailed, personalized training plans that are practical and actionable. CRITICAL: You must respond in the exact language requested, use the exact number of weeks specified, and follow the resource type distribution exactly as instructed." },
         { role: "user", content: prompt }
       ],
       model: "gpt-3.5-turbo",
       temperature: 0.7,
-      max_tokens: 2000
+      max_tokens: 4000
     });
+    console.log('=== API RESPONSE ===');
+    console.log('Response length:', response.length);
+    console.log('Full response:', response);
+    console.log('=== END RESPONSE DEBUG ===');
+    return response;
   }
 
   static async generateTrainingContent(module, formData) {
