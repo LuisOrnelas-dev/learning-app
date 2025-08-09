@@ -51,8 +51,8 @@ export class OpenAIService {
         { role: "system", content: "You are an expert technical training consultant specializing in industrial maintenance and manufacturing. You MUST follow ALL instructions exactly as specified. Create detailed, personalized training plans that are practical and actionable. CRITICAL: You must respond in the exact language requested, use the exact number of weeks specified, and follow the resource type distribution exactly as instructed." },
         { role: "user", content: prompt }
       ],
-      model: "gpt-3.5-turbo",
-      temperature: 0.7,
+      model: "gpt-4",
+      temperature: 0.3,
       max_tokens: 4000
     });
     console.log('=== API RESPONSE ===');

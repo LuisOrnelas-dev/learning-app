@@ -1,6 +1,14 @@
 import { OpenAIService } from './openaiService';
 
 export class ContentGenerationService {
+  // Helper function to determine content language
+  static getContentLanguage(formData) {
+    const lang = (formData.language || '').toLowerCase();
+    if (lang.includes('spanish') && lang.includes('english')) return 'Spanish with technical terms in English';
+    if (lang.includes('spanish') || lang.includes('español')) return 'Spanish';
+    return 'English';
+  }
+
   // Generate real content based on title
   static async generateRealContent(title, type, topic, formData) {
     try {
@@ -24,12 +32,14 @@ export class ContentGenerationService {
 
   // Generate PDF content
   static async generatePDFContent(title, topic, formData) {
+    const contentLanguage = this.getContentLanguage(formData);
     const prompt = `Create a comprehensive technical document for: "${title}"
 
 TOPIC: ${topic}
 CONTEXT: Industrial training for ${formData.currentRole}
 LEARNING STYLE: ${formData.learningStyle}
 EQUIPMENT: ${formData.equipmentUsed.join(', ')}
+LANGUAGE: ${contentLanguage}
 
 Please create a detailed technical document with the following structure:
 
@@ -65,7 +75,7 @@ Make the content:
 - Include relevant safety information
 - Suitable for ${formData.learningStyle} learners
 - Professional and comprehensive
-- **CRITICAL: Write everything in English language**
+- **CRITICAL: Write everything in ${contentLanguage}**
 
 Format as a proper technical document with clear sections and subsections.`;
 
