@@ -53,7 +53,7 @@ export class OpenAIService {
       ],
       model: "gpt-4",
       temperature: 0.1,
-      max_tokens: 4000
+      max_tokens: 6000
     });
     console.log('=== API RESPONSE ===');
     console.log('Response length:', response.length);
@@ -256,7 +256,7 @@ ${formData.learningStyle.includes('Kinesthetic') ? `
 - ALL titles, descriptions, and content must be in ${getContentLanguage()}
 
 **TRAINING PLAN STRUCTURE:**
-Create EXACTLY ${adjustedWeeks} weeks with this format:
+⚠️ CRITICAL: Create EXACTLY ${adjustedWeeks} weeks. Do NOT use "Continue this structure" - write ALL ${adjustedWeeks} weeks completely.
 
 ## Week X: [Specific Topic for ${formData.currentRole}]
 
@@ -266,8 +266,14 @@ Create EXACTLY ${adjustedWeeks} weeks with this format:
 - [Skill-gap focused objective 3]
 
 **Resources (2-3 per week):**
-- **[Type]:** [Title] - [Description tailored to ${formData.currentRole}]
-- **[Type]:** [Title] - [Description relating to ${formData.equipmentUsed.join(', ')}]
+- **Interactive:** [Title] - [Description tailored to ${formData.currentRole}]
+- **Video:** [Title] - [Description relating to ${formData.equipmentUsed.join(', ')}]
+- **PDF:** [Title] - [Quick reference only]
+
+🚨 RESOURCE TYPE FORMAT: Use EXACTLY these words:
+- **Interactive:** (not "Interactive Simulation" or "Interactive Exercise")
+- **Video:** (not "Video Tutorial" or "Video Demonstration")  
+- **PDF:** (not "PDF Guide" or "PDF Manual")
 
 **CRITICAL REQUIREMENTS - FOLLOW EXACTLY:**
 1. **DEVELOPMENT GOAL PRIORITY:** Every week must DIRECTLY advance toward: "${formData.developmentGoal}" - this is the PRIMARY focus
@@ -325,7 +331,14 @@ ${formData.learningStyle.includes('Auditory') ? 'MUST PRIORITIZE: Videos with au
 ${formData.learningStyle.includes('Kinesthetic') ? 'MUST PRIORITIZE: Interactive modules - LIMIT videos and PDFs' : ''}
 
 DO NOT CREATE THE SAME MIX EVERY WEEK (1 PDF + 1 Video + 1 Interactive).
-RESPECT THE LEARNING STYLE PREFERENCE ABOVE ALL ELSE!`;
+RESPECT THE LEARNING STYLE PREFERENCE ABOVE ALL ELSE!
+
+🚨🚨🚨 FINAL CRITICAL REMINDERS 🚨🚨🚨
+1. Write ALL ${adjustedWeeks} weeks completely - NO "Continue this structure"
+2. Use EXACT format: **Interactive:** **Video:** **PDF:** (nothing else)
+3. Focus on ${formData.developmentGoal} in every single week
+4. Respect learning style: ${formData.learningStyle}
+5. All content in ${getContentLanguage()}`;
   }
 
   static buildContentPrompt(module, formData) {

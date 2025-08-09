@@ -697,28 +697,53 @@ export default function HexpolTrainingForm() {
           console.log('✅ Found resource without link:', { title, type });
         }
         
-        // Detectar recursos con formato de lista con guión (- **tipo:** título)
-        const dashResourceMatch = line.match(/^\s*-\s*\*\*(video|pdf|interactive|Video|PDF|Interactive)\*\*:?\s*(.+)/i);
+        // Detectar recursos con formato de lista con guión - parsing manual
+        let dashResourceMatch = null;
+        if (line.trim().startsWith('-') && line.includes('**') && line.includes(':**') && currentWeek) {
+          // Extraer tipo: buscar **TIPO:**
+          const typeStart = line.indexOf('**') + 2;
+          const typeEnd = line.indexOf(':**');
+          if (typeStart > 1 && typeEnd > typeStart) {
+            const rawType = line.substring(typeStart, typeEnd).trim();
+            const fullContent = line.substring(typeEnd + 3).trim();
+            
+            dashResourceMatch = [null, rawType, fullContent];
+          }
+        }
+        
         if (dashResourceMatch && currentWeek) {
-          const [, type, fullTitle] = dashResourceMatch;
-          // Limpiar título: remover comillas y extraer solo el título principal
-          let cleanTitle = fullTitle.trim();
-          if (cleanTitle.startsWith('"') && cleanTitle.includes('" -')) {
-            cleanTitle = cleanTitle.split('" -')[0].substring(1);
-          } else if (cleanTitle.includes(' - ')) {
+          const [, rawType, fullContent] = dashResourceMatch;
+          
+          // Normalizar el tipo
+          let type = rawType.toLowerCase().trim();
+          
+          // Mapear variaciones de interactive
+          if (type.includes('interactive') || type.includes('interactivo')) {
+            type = 'interactive';
+          } else if (type.includes('video') || type.includes('vídeo')) {
+            type = 'video';
+          } else if (type.includes('pdf') || type.includes('documento') || type.includes('manual')) {
+            type = 'pdf';
+          }
+          
+          // Extraer título del contenido (formato: "Título" - Descripción o Título - Descripción)
+          let cleanTitle = fullContent.trim();
+          if (cleanTitle.includes(' - ')) {
             cleanTitle = cleanTitle.split(' - ')[0];
           }
+          // Remover comillas si existen
+          cleanTitle = cleanTitle.replace(/^["']|["']$/g, '').replace(/\\"/g, '"').trim();
           
           currentResources.push({
             id: `${currentWeek.weekNumber}-${currentResources.length + 1}`,
             title: cleanTitle.trim(),
-            type: type.toLowerCase(),
+            type: type,
             duration: '30 min',
             url: null,
             completed: false,
             description: `${type} training resource for ${currentWeek.title}`
           });
-          console.log('✅ Found dash resource:', { title: cleanTitle, type: type.toLowerCase() });
+          console.log('✅ Found dash resource:', { title: cleanTitle, type: type, rawType: rawType });
         }
       }
 
@@ -1520,7 +1545,63 @@ export default function HexpolTrainingForm() {
       return;
     }
     
-    // Si no hay URL, generar contenido directamente
+          // Manejar videos PRIMERO - siempre buscar en YouTube
+    if (type === 'video') {
+      console.log('🔍 Searching YouTube for:', title);
+      const { WebSearchService } = await import('./services/webSearchService');
+      // Detect language for YouTube search
+      const lang = (formData.language || '').toLowerCase();
+      const searchLanguage = (lang.includes('spanish') || lang.includes('español')) ? 'es' : 'en';
+      
+      // PASO 1: Intentar con el título EXACTO primero
+      console.log('📺 Step 1: Trying exact title search');
+      let youtubeResults = await WebSearchService.searchYouTube(title, 3, searchLanguage);
+      
+      if (youtubeResults.length > 0) {
+        const video = youtubeResults[0];
+        console.log('✅ Found YouTube video with exact title:', video.title);
+        setSelectedVideo({ videoId: video.videoId, title: video.title });
+        return;
+      }
+      
+      // PASO 2: Si no encuentra nada, usar búsqueda simplificada con keywords
+      console.log('📺 Step 2: Exact title failed, trying simplified search');
+      const keywords = ['PLC', 'Siemens', 'troubleshooting', 'mantenimiento', 'industrial', 'problemas'];
+      const foundKeywords = keywords.filter(keyword => 
+        title.toLowerCase().includes(keyword.toLowerCase())
+      );
+      
+      if (foundKeywords.length > 0) {
+        const simplifiedQuery = foundKeywords.join(' ');
+        console.log('🎯 Using simplified search query:', simplifiedQuery);
+        youtubeResults = await WebSearchService.searchYouTube(simplifiedQuery, 3, searchLanguage);
+        
+        if (youtubeResults.length > 0) {
+          const video = youtubeResults[0];
+          console.log('✅ Found YouTube video with simplified search:', video.title);
+          setSelectedVideo({ videoId: video.videoId, title: video.title });
+          return;
+        }
+      }
+      
+      // PASO 3: Búsqueda de fallback con términos súper generales
+      console.log('📺 Step 3: Simplified search failed, trying fallback');
+      const fallbackQuery = searchLanguage === 'es' ? 'PLC Siemens tutorial' : 'PLC Siemens training';
+      console.log('🆘 Using fallback search query:', fallbackQuery);
+      const fallbackResults = await WebSearchService.searchYouTube(fallbackQuery, 3, searchLanguage);
+      
+      if (fallbackResults.length > 0) {
+        const video = fallbackResults[0];
+        console.log('✅ Found fallback YouTube video:', video.title);
+        setSelectedVideo({ videoId: video.videoId, title: video.title });
+        return;
+      }
+      
+      alert('No se encontraron videos relacionados con este tema.');
+      return;
+    }
+    
+    // Si no hay URL, generar contenido directamente (solo para PDF e Interactive)
     console.log('=== STARTING CONTENT GENERATION ===');
     console.log('No URL found, generating content directly for:', title, type);
     
@@ -1556,19 +1637,7 @@ export default function HexpolTrainingForm() {
         return;
       }
       
-      if (type === 'video') {
-        console.log('Searching YouTube for:', title);
-        const { WebSearchService } = await import('./services/webSearchService');
-        // Detect language for YouTube search
-        const lang = (formData.language || '').toLowerCase();
-        const searchLanguage = (lang.includes('spanish') || lang.includes('español')) ? 'es' : 'en';
-        const youtubeResults = await WebSearchService.searchYouTube(title, 1, searchLanguage);
-        if (youtubeResults.length > 0) {
-          const video = youtubeResults[0];
-          setSelectedVideo({ videoId: video.videoId, title });
-          return;
-        }
-      }
+
       
       if (type === 'interactive') {
         console.log('Generating interactive instructions for:', title);
@@ -2584,9 +2653,29 @@ export default function HexpolTrainingForm() {
                               <span>5-7 hours</span>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Video</span>
-                              <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Interactive</span>
-                              <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">Quiz</span>
+                              {(() => {
+                                const weekData = trainingResources.find(week => week.weekNumber === weekNumber);
+                                if (!weekData || !weekData.resources) return null;
+                                
+                                // Obtener tipos únicos de recursos para esta semana
+                                const resourceTypes = [...new Set(weekData.resources.map(resource => resource.type))];
+                                
+                                return resourceTypes.map(type => {
+                                  const typeConfig = {
+                                    'video': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Video' },
+                                    'pdf': { bg: 'bg-red-100', text: 'text-red-800', label: 'PDF' },
+                                    'interactive': { bg: 'bg-green-100', text: 'text-green-800', label: 'Interactive' }
+                                  };
+                                  
+                                  const config = typeConfig[type] || { bg: 'bg-gray-100', text: 'text-gray-800', label: type };
+                                  
+                                  return (
+                                    <span key={type} className={`px-2 py-1 ${config.bg} ${config.text} rounded-full text-xs`}>
+                                      {config.label}
+                                    </span>
+                                  );
+                                });
+                              })()}
                             </div>
                           </div>
                         </div>
