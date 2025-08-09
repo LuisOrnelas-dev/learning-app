@@ -624,6 +624,11 @@ export default function HexpolTrainingForm() {
       let currentResources = [];
 
       for (const line of lines) {
+        // Debug: log líneas que podrían ser recursos
+        if (line.includes('**') && (line.includes('PDF') || line.includes('pdf') || line.includes('Video') || line.includes('video') || line.includes('Interactive') || line.includes('interactive'))) {
+          console.log('🔍 Processing potential resource line:', line);
+        }
+        
         // Detectar semanas (en inglés "Week" o español "Semana")
         if (line.startsWith('## Week') || line.startsWith('## Semana')) {
           if (currentWeek) {
@@ -644,8 +649,8 @@ export default function HexpolTrainingForm() {
           }
         }
         
-        // Detectar recursos con enlaces
-        const resourceMatch = line.match(/\*\*(video|pdf|interactive)\*\*:?\s*\[([^\]]+)\]\(([^)]+)\)/);
+        // Detectar recursos con enlaces (case insensitive)
+        const resourceMatch = line.match(/\*\*(video|pdf|interactive|Video|PDF|Interactive)\*\*:?\s*\[([^\]]+)\]\(([^)]+)\)/i);
         if (resourceMatch && currentWeek) {
           const [, type, title, url] = resourceMatch;
           currentResources.push({
@@ -660,8 +665,8 @@ export default function HexpolTrainingForm() {
           console.log('Found resource with link:', { title, type, url });
         }
         
-        // Detectar recursos con formato generado
-        const generatedMatch = line.match(/\*\*(video|pdf|interactive)\*\*:?\s*\[([^\]]+)\]\(generated:([^)]+)\)/);
+        // Detectar recursos con formato generado (case insensitive)
+        const generatedMatch = line.match(/\*\*(video|pdf|interactive|Video|PDF|Interactive)\*\*:?\s*\[([^\]]+)\]\(generated:([^)]+)\)/i);
         if (generatedMatch && currentWeek) {
           const [, type, title, encodedContent] = generatedMatch;
           currentResources.push({
@@ -676,8 +681,8 @@ export default function HexpolTrainingForm() {
           console.log('Found generated resource:', { title, type, contentLength: encodedContent.length });
         }
         
-        // Detectar recursos sin enlaces
-        const resourceNoLinkMatch = line.match(/\*\*(video|pdf|interactive)\*\*:?\s*([^\n]+)/);
+        // Detectar recursos sin enlaces (case insensitive y más formatos)
+        const resourceNoLinkMatch = line.match(/\*\*(video|pdf|interactive|Video|PDF|Interactive)\*\*:?\s*([^\n]+)/i);
         if (resourceNoLinkMatch && currentWeek) {
           const [, type, title] = resourceNoLinkMatch;
           currentResources.push({
