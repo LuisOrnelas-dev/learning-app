@@ -96,12 +96,14 @@ Format as a proper technical document with clear sections and subsections.`;
 
   // Generate video content (transcript + description)
   static async generateVideoContent(title, topic, formData) {
+    const contentLanguage = this.getContentLanguage(formData);
     const prompt = `Create a comprehensive video script and description for: "${title}"
 
 TOPIC: ${topic}
 CONTEXT: Industrial training video for ${formData.currentRole}
 LEARNING STYLE: ${formData.learningStyle}
 EQUIPMENT: ${formData.equipmentUsed.join(', ')}
+LANGUAGE: ${contentLanguage}
 
 Please create:
 
@@ -122,7 +124,7 @@ Make the content:
 - Suitable for ${formData.learningStyle} learners
 - Focused on practical demonstrations
 - Professional and comprehensive
-- **CRITICAL: Write everything in English language**
+- **CRITICAL: Write everything in ${contentLanguage}**
 
 Format as a structured video script with clear sections.`;
 
@@ -143,12 +145,14 @@ Format as a structured video script with clear sections.`;
 
   // Generate interactive content
   static async generateInteractiveContent(title, topic, formData) {
+    const contentLanguage = this.getContentLanguage(formData);
     const prompt = `Create an interactive training module for: "${title}"
 
 TOPIC: ${topic}
 CONTEXT: Interactive training for ${formData.currentRole}
 LEARNING STYLE: ${formData.learningStyle}
 EQUIPMENT: ${formData.equipmentUsed.join(', ')}
+LANGUAGE: ${contentLanguage}
 
 Please create:
 
@@ -175,7 +179,7 @@ Make the content:
 - Suitable for ${formData.learningStyle} learners
 - Focused on practical application
 - Include assessment and feedback
-- **CRITICAL: Write everything in English language**
+- **CRITICAL: Write everything in ${contentLanguage}**
 
 Format as an interactive training module with clear sections.`;
 
@@ -197,18 +201,30 @@ Format as an interactive training module with clear sections.`;
   // Generate instructions for interactive canvas
   static generateInteractiveInstructions(title, topic, formData) {
     const instructions = [];
+    const contentLanguage = this.getContentLanguage(formData);
+    const isSpanish = contentLanguage.includes('Spanish');
     
     // Detectar el tipo de contenido basado en el título
     const lowerTitle = title.toLowerCase();
     
-    if (lowerTitle.includes('hydraulic') || lowerTitle.includes('hydraulics')) {
-      instructions.push(
-        "Draw a basic hydraulic system diagram showing pump, reservoir, valves, and actuator",
-        "Label the main components: pump, pressure relief valve, directional control valve, cylinder",
-        "Sketch the flow path of hydraulic fluid through the system",
-        "Draw a simple troubleshooting flowchart for common hydraulic problems",
-        "Create a maintenance checklist diagram with inspection points"
-      );
+    if (lowerTitle.includes('hydraulic') || lowerTitle.includes('hydraulics') || lowerTitle.includes('hidráulico')) {
+      if (isSpanish) {
+        instructions.push(
+          "Dibuja un diagrama básico del sistema hidráulico mostrando bomba, depósito, válvulas y actuador",
+          "Etiqueta los componentes principales: bomba, válvula de alivio de presión, válvula de control direccional, cilindro",
+          "Bosqueja el flujo del fluido hidráulico a través del sistema",
+          "Dibuja un diagrama de solución de problemas para problemas hidráulicos comunes",
+          "Crea un diagrama de lista de verificación de mantenimiento con puntos de inspección"
+        );
+      } else {
+        instructions.push(
+          "Draw a basic hydraulic system diagram showing pump, reservoir, valves, and actuator",
+          "Label the main components: pump, pressure relief valve, directional control valve, cylinder",
+          "Sketch the flow path of hydraulic fluid through the system",
+          "Draw a simple troubleshooting flowchart for common hydraulic problems",
+          "Create a maintenance checklist diagram with inspection points"
+        );
+      }
     } else if (lowerTitle.includes('electrical') || lowerTitle.includes('electrical systems')) {
       instructions.push(
         "Draw a basic electrical circuit diagram with power source, switch, and load",
@@ -233,14 +249,24 @@ Format as an interactive training module with clear sections.`;
         "Draw an emergency response procedure diagram",
         "Create a safety inspection checklist diagram"
       );
-    } else if (lowerTitle.includes('plc') || lowerTitle.includes('programming')) {
-      instructions.push(
-        "Draw a basic PLC ladder logic diagram for a simple control function",
-        "Sketch a PLC system block diagram showing inputs, CPU, and outputs",
-        "Create a programming flowchart for a specific operation",
-        "Draw an I/O mapping diagram for a control system",
-        "Sketch a troubleshooting flowchart for PLC problems"
-      );
+    } else if (lowerTitle.includes('plc') || lowerTitle.includes('programming') || lowerTitle.includes('siemens')) {
+      if (isSpanish) {
+        instructions.push(
+          "Dibuja un diagrama básico de lógica ladder de PLC para una función de control simple",
+          "Bosqueja un diagrama de bloques del sistema PLC mostrando entradas, CPU y salidas",
+          "Crea un diagrama de flujo de programación para una operación específica",
+          "Dibuja un diagrama de mapeo de E/S para un sistema de control",
+          "Bosqueja un diagrama de solución de problemas para problemas de PLC"
+        );
+      } else {
+        instructions.push(
+          "Draw a basic PLC ladder logic diagram for a simple control function",
+          "Sketch a PLC system block diagram showing inputs, CPU, and outputs",
+          "Create a programming flowchart for a specific operation",
+          "Draw an I/O mapping diagram for a control system",
+          "Sketch a troubleshooting flowchart for PLC problems"
+        );
+      }
     } else if (lowerTitle.includes('maintenance') || lowerTitle.includes('preventive')) {
       instructions.push(
         "Draw a preventive maintenance schedule diagram",
