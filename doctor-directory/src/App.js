@@ -1283,7 +1283,10 @@ export default function HexpolTrainingForm() {
 
   // Función para parsear el plan de entrenamiento del markdown
   const parseTrainingPlanMarkdown = useCallback((markdown) => {
-    console.log('Parsing markdown:', markdown);
+    console.log('🚀 === PARSING MARKDOWN START ===');
+    console.log('📄 Full markdown content:');
+    console.log(markdown);
+    console.log('🚀 === PARSING MARKDOWN END ===');
     
     const weeks = [];
     const lines = markdown.split('\n');
@@ -1356,7 +1359,7 @@ export default function HexpolTrainingForm() {
           description: `${type} training resource for ${currentWeek.title}`
         };
         currentResources.push(resource);
-        console.log('Found resource without link:', resource);
+        console.log('✅ Found resource without link:', resource);
       }
       
       // Detectar recursos con formato diferente (con guiones) - incluye mayúsculas y alternativas
@@ -1380,7 +1383,7 @@ export default function HexpolTrainingForm() {
           description: `${type} training resource for ${currentWeek.title}`
         };
         currentResources.push(resource);
-        console.log('Found resource with dash format:', resource);
+        console.log('✅ Found resource with dash format:', resource);
       }
     }
 
@@ -1392,7 +1395,14 @@ export default function HexpolTrainingForm() {
       });
     }
 
-    console.log('Parsed weeks:', weeks);
+    console.log('📊 FINAL PARSING RESULTS:');
+    console.log('Total weeks found:', weeks.length);
+    weeks.forEach((week, index) => {
+      console.log(`Week ${week.weekNumber}: "${week.title}" - ${week.resources.length} resources`);
+      week.resources.forEach((resource, resIndex) => {
+        console.log(`  Resource ${resIndex + 1}: ${resource.type} - "${resource.title}"`);
+      });
+    });
     
     // Si no se encontraron recursos, crear recursos por defecto
     if (weeks.length > 0 && weeks.every(week => week.resources.length === 0)) {
