@@ -316,9 +316,7 @@ const OptimizedForm = memo(({
   removeEquipment,
   handleSubmit,
   generateCourse,
-  getEstimatedCost,
-  localMode,
-  demoMode
+  getEstimatedCost
 }) => {
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -375,7 +373,7 @@ const OptimizedForm = memo(({
               ) : "Generate Plan"}
             </button>
                               <p className="text-xs text-gray-500 mt-1">
-                    {localMode ? 'Local AI - No cost' : demoMode ? 'Demo Mode - No cost' : `Estimated cost: ~$${getEstimatedCost()}`}
+                    Estimated cost: ~$${getEstimatedCost()}
                   </p>
           </div>
         </div>

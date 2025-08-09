@@ -1714,6 +1714,17 @@ export default function HexpolTrainingForm() {
       )}
 
       <div className="max-w-full mx-auto mt-16 px-2 sm:px-4">
+        {/* API Configuration Modal */}
+        {showApiConfig && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-2xl w-full">
+              <div className="p-6">
+                <ApiConfig onApiKeySet={handleApiKeySet} />
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="text-center mb-10">
           <div className="bg-blue-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
             <FaCog className="text-3xl" />
@@ -1726,7 +1737,146 @@ export default function HexpolTrainingForm() {
               ? "Complete this form to receive a personalized training plan" 
               : "Your personalized training plan"}
           </p>
-        </div>
+          
+          {/* API Status Indicator */}
+          <div className="mt-4 flex items-center justify-center space-x-4">
+            {localMode ? (
+              <div className="flex items-center text-purple-600">
+                <FaRobot className="mr-2" />
+                <span className="text-sm">Local AI (Ollama)</span>
+                <button
+                  onClick={() => setLocalMode(false)}
+                  className="ml-2 text-xs text-blue-600 hover:text-blue-800"
+                >
+                  Switch to API
+                </button>
+              </div>
+            ) : demoMode ? (
+              <div className="flex items-center text-orange-600">
+                <FaRobot className="mr-2" />
+                <span className="text-sm">Demo Mode</span>
+                <button
+                  onClick={() => setDemoMode(false)}
+                  className="ml-2 text-xs text-blue-600 hover:text-blue-800"
+                >
+                  Switch to API
+                </button>
+              </div>
+            ) : apiKey ? (
+              <div className="flex items-center text-green-600">
+                <FaKey className="mr-2" />
+                <span className="text-sm">API Connected</span>
+                <div className="flex space-x-2 ml-2">
+                  <button
+                    onClick={() => setDemoMode(true)}
+                    className="text-xs text-orange-600 hover:text-orange-800"
+                  >
+                    Demo
+                  </button>
+                  <button
+                    onClick={() => setLocalMode(true)}
+                    className="text-xs text-purple-600 hover:text-purple-800"
+                  >
+                    Local
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setShowApiConfig(true)}
+                  className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  <FaKey className="mr-2" />
+                  OpenAI API
+                </button>
+                <button
+                  onClick={() => setLocalMode(true)}
+                  className="flex items-center text-purple-600 hover:text-purple-800 text-sm"
+                >
+                  <FaRobot className="mr-2" />
+                  Local AI
+                </button>
+              </div>
+            )}
+            
+            {/* Debug button */}
+            {/* <button
+              onClick={() => {
+                debugApiKey();
+                console.log('Current API Key State:', apiKey);
+              }}
+              className="flex items-center text-gray-500 hover:text-gray-700 text-xs"
+            >
+              <FaCog className="mr-1" />
+              Debug
+            </button> */}
+            
+            {/* Test Models button */}
+            {/* <button
+              onClick={async () => {
+                try {
+                  if (localMode) {
+                    const status = await OllamaService.checkOllamaStatus();
+                    console.log('Ollama status:', status);
+                    if (status.status === 'available') {
+                      alert(`✅ Ollama disponible\nModelos: ${status.models.map(m => m.name).join(', ')}`);
+                    } else {
+                      alert(`❌ Ollama no disponible\n${status.error}`);
+                    }
+                  } else {
+                    const model = await detectAvailableModels();
+                    console.log('Selected model:', model);
+                    alert(`Selected model: ${model}`);
+                  }
+                } catch (error) {
+                  console.error('Error detecting models:', error);
+                  alert('Error detectando modelos: ' + error.message);
+                }
+              }}
+              className="flex items-center text-gray-500 hover:text-gray-700 text-xs"
+            >
+              <FaRobot className="mr-1" />
+              Test Models
+            </button> */}
+            
+            {/* Check Account button */}
+            {/* <button
+              onClick={async () => {
+                try {
+                  const status = await checkAccountStatus();
+                  console.log('Account status:', status);
+                  
+                  let message = '';
+                  switch (status.status) {
+                    case 'active':
+                      message = `✅ Cuenta activa\nModelos disponibles: ${status.models}`;
+                      break;
+                    case 'rate_limited':
+                      message = `⚠️ Rate limit activo\n${status.error}`;
+                      break;
+                    case 'invalid_key':
+                      message = `❌ API key inválida\n${status.error}`;
+                      break;
+                    case 'no_quota':
+                      message = `❌ Sin saldo\n${status.error}\n\nSolución:\n1. Ve a https://platform.openai.com/billing\n2. Agrega método de pago\n3. Agrega $5-10 de créditos`;
+                      break;
+                    default:
+                      message = `❌ Error: ${status.error}`;
+                  }
+                  
+                  alert(message);
+                } catch (error) {
+                  console.error('Error checking account:', error);
+                  alert('Error verificando cuenta: ' + error.message);
+                }
+              }}
+              className="flex items-center text-gray-500 hover:text-gray-700 text-xs"
+            >
+              <FaKey className="mr-1" />
+              Check Account
+            </button> */}
+          </div>
         </div>
 
         {/* Sistema de pestañas */}
