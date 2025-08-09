@@ -497,11 +497,7 @@ export default function HexpolTrainingForm() {
   const [generatedCourse, setGeneratedCourse] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState(null);
-  const [apiKey, setApiKey] = useState('backend-proxy'); // Backend handles API key
-  const [showApiConfig, setShowApiConfig] = useState(false); // No need to show API config
   const [generationStatus, setGenerationStatus] = useState('');
-  const [demoMode, setDemoMode] = useState(false); // Always use real OpenAI service
-  const [localMode, setLocalMode] = useState(false);
 
   const [activeTab, setActiveTab] = useState('form');
   const [evaluationStats, setEvaluationStats] = useState(null);
