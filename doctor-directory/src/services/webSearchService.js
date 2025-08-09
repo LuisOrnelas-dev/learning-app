@@ -8,18 +8,23 @@ export class WebSearchService {
   static GOOGLE_CSE_ID = process.env.REACT_APP_GOOGLE_CSE_ID || '';
 
   // Buscar videos en YouTube
-  static async searchYouTube(query, maxResults = 3) {
+  static async searchYouTube(query, maxResults = 3, language = 'en') {
     if (!this.YOUTUBE_API_KEY) {
       console.warn('YouTube API Key no configurada');
       return [];
     }
 
     try {
-      // Mejorar la búsqueda con términos más específicos
-      const enhancedQuery = `${query} industrial training tutorial`;
+      // Mejorar la búsqueda con términos más específicos según idioma
+      let enhancedQuery;
+      if (language === 'es') {
+        enhancedQuery = `${query} capacitación industrial tutorial español`;
+      } else {
+        enhancedQuery = `${query} industrial training tutorial`;
+      }
       
       const response = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(enhancedQuery)}&type=video&maxResults=${maxResults}&key=${this.YOUTUBE_API_KEY}&videoDuration=medium&relevanceLanguage=en`
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(enhancedQuery)}&type=video&maxResults=${maxResults}&key=${this.YOUTUBE_API_KEY}&videoDuration=medium&relevanceLanguage=${language}`
       );
       
       if (!response.ok) {

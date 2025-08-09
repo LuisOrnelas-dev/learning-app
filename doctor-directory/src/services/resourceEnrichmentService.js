@@ -74,7 +74,10 @@ export class ResourceEnrichmentService {
           // Para videos, buscar en YouTube primero
           if (type === 'video') {
             console.log(`Buscando video real en YouTube para: ${title}`);
-            const youtubeResults = await WebSearchService.searchYouTube(title, 1);
+            // Detect language for YouTube search
+            const lang = (formData.language || '').toLowerCase();
+            const searchLanguage = (lang.includes('spanish') || lang.includes('español')) ? 'es' : 'en';
+            const youtubeResults = await WebSearchService.searchYouTube(title, 1, searchLanguage);
             
             if (youtubeResults.length > 0) {
               const video = youtubeResults[0];

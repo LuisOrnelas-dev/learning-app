@@ -1498,7 +1498,10 @@ export default function HexpolTrainingForm() {
       if (type === 'video') {
         console.log('Searching YouTube for:', title);
         const { WebSearchService } = await import('./services/webSearchService');
-        const youtubeResults = await WebSearchService.searchYouTube(title, 1);
+        // Detect language for YouTube search
+        const lang = (formData.language || '').toLowerCase();
+        const searchLanguage = (lang.includes('spanish') || lang.includes('español')) ? 'es' : 'en';
+        const youtubeResults = await WebSearchService.searchYouTube(title, 1, searchLanguage);
         if (youtubeResults.length > 0) {
           const video = youtubeResults[0];
           setSelectedVideo({ videoId: video.videoId, title });
