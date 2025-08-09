@@ -37,6 +37,11 @@ const API_URL = 'https://openai-proxy-3wxw.onrender.com/api/generate';
 export class OpenAIService {
   static async generateTrainingPlan(formData) {
     const prompt = this.buildTrainingPlanPrompt(formData);
+    console.log('=== PROMPT BEING SENT TO API ===');
+    console.log('FormData received:', formData);
+    console.log('Prompt length:', prompt.length);
+    console.log('First 500 characters of prompt:', prompt.substring(0, 500));
+    console.log('=== END PROMPT DEBUG ===');
     return callOpenAIProxy({
       messages: [
         { role: "system", content: "You are an expert technical training consultant specializing in industrial maintenance and manufacturing. Create detailed, personalized training plans that are practical and actionable." },
