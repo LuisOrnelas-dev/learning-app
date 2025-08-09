@@ -2920,6 +2920,43 @@ export default function HexpolTrainingForm() {
           />
         )}
       </div>
+      
+      {/* Fullscreen Loading Overlay */}
+      {isGenerating && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+                     <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-4 text-center">
+            <div className="mb-6">
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">Generating Your Course</h3>
+              <p className="text-gray-600">Creating personalized training content...</p>
+            </div>
+            
+            <div className="space-y-3 text-sm text-gray-500">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span>🧠 Analyzing your profile and goals</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animation-delay-200"></div>
+                <span>📚 Generating customized content</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animation-delay-400"></div>
+                <span>🎯 Adapting to your learning style</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animation-delay-600"></div>
+                <span>⚡ Finalizing training plan</span>
+              </div>
+            </div>
+            
+            <div className="mt-6 bg-gray-100 rounded-full h-2">
+              <div className="bg-blue-500 h-2 rounded-full animate-pulse" style={{width: '75%'}}></div>
+            </div>
+            <p className="text-xs text-gray-400 mt-2">This may take 30-60 seconds</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
