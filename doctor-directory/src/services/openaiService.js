@@ -137,118 +137,131 @@ Respond as a knowledgeable instructor who understands both the technical content
     // Ajustar basado en horas disponibles (más horas = menos semanas necesarias)
     const adjustedWeeks = Math.max(3, Math.min(12, Math.ceil(totalWeeks * (2 / hoursPerWeek))));
     
-    return `Create a comprehensive, personalized INDUSTRIAL TECHNICAL training plan for ${formData.fullName} (${formData.currentRole}) at TechFlow Academy.
+    // Determine content language based on preference
+    const getContentLanguage = () => {
+      if (formData.language === 'spanish') return 'Spanish';
+      if (formData.language === 'spanish with technical terms in english') return 'Spanish with technical terms in English';
+      return 'English';
+    };
 
-**CRITICAL: Focus ONLY on industrial topics: PLC programming, electrical systems, mechanical systems, hydraulics, pneumatics, industrial controls, automation, safety, and manufacturing equipment. DO NOT include cybersecurity, software development, or non-industrial topics.**
+    // Determine resource types based on learning style
+    const getResourceTypes = () => {
+      if (formData.learningStyle.includes('Reading')) {
+        return 'Focus EXCLUSIVELY on written materials: PDFs, manuals, technical documents, guides, and written procedures. Minimize videos and interactive content.';
+      }
+      if (formData.learningStyle.includes('Auditory')) {
+        return 'Focus PRIMARILY on audio/video content: video lectures, audio explanations, recorded presentations, and verbal instructions. Include some PDFs as transcripts.';
+      }
+      if (formData.learningStyle.includes('Visual')) {
+        return 'Focus PRIMARILY on visual content: videos with demonstrations, visual diagrams, infographics, and visual simulations. Include interactive visual tools.';
+      }
+      if (formData.learningStyle.includes('Kinesthetic')) {
+        return 'Focus PRIMARILY on hands-on interactive content: interactive simulations, practical exercises, hands-on activities, and step-by-step practice modules.';
+      }
+      return 'Provide a balanced mix of all resource types.';
+    };
 
-EMPLOYEE PROFILE:
-- Name: ${formData.fullName}
-- Email: ${formData.email}
-- Employee ID: ${formData.employeeId}
-- Position: ${formData.position}
+    // Prioritize skills based on current levels
+    const getPrioritySkills = () => {
+      const skillLevels = {
+        mechanical: formData.mechanical,
+        electrical: formData.electrical,
+        hydraulics: formData.hydraulics,
+        pneumatics: formData.pneumatics,
+        controls: formData.controls,
+        safetyEhs: formData.safetyEhs
+      };
+      
+      const prioritySkills = Object.entries(skillLevels)
+        .filter(([skill, level]) => level === 'none' || level === 'basic')
+        .map(([skill, level]) => `${skill} (currently ${level})`)
+        .join(', ');
+      
+      return prioritySkills || 'All technical areas for advancement';
+    };
+
+    return `Create a HIGHLY PERSONALIZED industrial technical training plan for ${formData.fullName} (${formData.currentRole}, ${formData.position}) at TechFlow Academy.
+
+**CRITICAL PERSONALIZATION REQUIREMENTS:**
+
+🎯 **ROLE-SPECIFIC CONTENT:**
 - Current Role: ${formData.currentRole}
-- Learning Style: ${formData.learningStyle}
-- Language Preference: ${formData.language}
-- Time Availability: ${formData.hoursPerWeek} hours per week
-- Preferred Schedule: ${formData.preferredSchedule}
-- Target Time: ${targetMonths} month(s)
-- Development Goal: ${formData.developmentGoal}
+- Position: ${formData.position}
+- Development Goal: "${formData.developmentGoal}"
+- Design ALL content specifically for ${formData.currentRole} responsibilities and ${formData.position} requirements
 
-TECHNICAL SKILLS ASSESSMENT (Current Level):
-- Mechanical: ${formData.mechanical}
-- Electrical: ${formData.electrical}
-- Hydraulics: ${formData.hydraulics}
-- Pneumatics: ${formData.pneumatics}
-- Controls: ${formData.controls}
-- Safety/EHS: ${formData.safetyEhs}
+📊 **SKILLS PRIORITY (Focus on gaps first):**
+Priority Skills to Develop: ${getPrioritySkills()}
+Current Skill Levels:
+- Mechanical: ${formData.mechanical} | Electrical: ${formData.electrical}
+- Hydraulics: ${formData.hydraulics} | Pneumatics: ${formData.pneumatics}
+- Controls: ${formData.controls} | Safety/EHS: ${formData.safetyEhs}
 
-EQUIPMENT USED: ${formData.equipmentUsed.join(', ')}
+🛠️ **EQUIPMENT-SPECIFIC TRAINING:**
+Primary Equipment: ${formData.equipmentUsed.join(', ') || 'General industrial equipment'}
+- Create equipment-specific modules for: ${formData.equipmentUsed.join(', ')}
+- Include troubleshooting, maintenance, and operation procedures
 
-Please create a ${adjustedWeeks}-week training plan with the following structure:
+⏰ **TIME STRUCTURE:**
+- Target Duration: ${targetMonths} month(s) = ${adjustedWeeks} weeks EXACTLY
+- Weekly Time: ${formData.hoursPerWeek} hours
+- Schedule: ${formData.preferredSchedule}
+- Total Hours: ${adjustedWeeks * hoursPerWeek} hours
 
-**IMPORTANT: Use exactly ${adjustedWeeks} weeks, each with ## Week X: [Title] format**
+🎨 **LEARNING STYLE ADAPTATION:**
+${getResourceTypes()}
 
-**PLANNING CONSIDERATIONS:**
-1. **Current Skills Gap:** Focus on areas where skills are 'none' or 'basic'
-2. **Equipment Focus:** Prioritize training related to ${formData.equipmentUsed.join(', ')}
-3. **Learning Style Adaptation:** 
-   - If Visual: Prioritize videos, diagrams, interactive simulations, and visual demonstrations
-   - If Reading: Focus on technical documents, manuals, PDF guides, and written materials
-   - If Kinesthetic: Emphasize hands-on activities, interactive simulations, and practical exercises
-   - If Auditory: Include audio explanations, video lectures, and verbal instructions
-4. **Schedule Preference:** Consider ${formData.preferredSchedule} availability
-5. **Language:** Provide all content in English (regardless of user language preference for consistency)
-6. **Progressive Learning:** Build from current skill levels to advanced
+${formData.learningStyle.includes('Reading') ? `
+**RESOURCE BREAKDOWN FOR READING LEARNERS:**
+- 80% PDFs, manuals, technical documents, written procedures
+- 15% Videos (only for complex demonstrations)
+- 5% Interactive (only for assessments)` : ''}
 
-For each week, include:
-1. **Week Title** - Focus on specific skills from the development goal
-2. **Learning Objectives** - What will be learned this week
-3. **Resources** - List 2-3 resources per week, prioritizing the learning style:
+${formData.learningStyle.includes('Auditory') ? `
+**RESOURCE BREAKDOWN FOR AUDITORY LEARNERS:**
+- 70% Videos with strong audio explanations and lectures
+- 20% PDFs (as transcripts and reference materials)
+- 10% Interactive (audio-guided simulations)` : ''}
 
-**For Visual Learners (${formData.learningStyle.includes('Visual') ? 'YES' : 'NO'}):**
-   - **Video:** [Clear, concise title] - [Visual demonstration/explanation]
-   - **Interactive:** [Clear, concise title] - [Visual simulation/diagram]
-   - **PDF:** [Clear, concise title] - [Visual guide with diagrams]
+${formData.learningStyle.includes('Visual') ? `
+**RESOURCE BREAKDOWN FOR VISUAL LEARNERS:**
+- 60% Videos with visual demonstrations and diagrams
+- 25% Interactive visual simulations and tools
+- 15% PDFs with rich visual content` : ''}
 
-**For Reading Learners (${formData.learningStyle.includes('Reading') ? 'YES' : 'NO'}):**
-   - **PDF:** [Specific technical topic] - [Comprehensive technical document with detailed content, examples, and procedures]
-   - **PDF:** [Equipment-specific manual] - [Step-by-step manual for ${formData.equipmentUsed.join(', ')}]
-   - **Video:** [Clear, concise title] - [Supplemental visual aid]
+${formData.learningStyle.includes('Kinesthetic') ? `
+**RESOURCE BREAKDOWN FOR KINESTHETIC LEARNERS:**
+- 70% Interactive hands-on simulations and exercises
+- 20% Videos showing step-by-step procedures
+- 10% PDFs (only for quick reference guides)` : ''}
 
-**For Kinesthetic Learners (${formData.learningStyle.includes('Kinesthetic') ? 'YES' : 'NO'}):**
-   - **Interactive:** [Clear, concise title] - [Hands-on simulation]
-   - **Interactive:** [Clear, concise title] - [Practical exercise]
-   - **Video:** [Clear, concise title] - [Demonstration to follow along]
+🌍 **LANGUAGE REQUIREMENTS:**
+- Content Language: ${getContentLanguage()}
+- ALL titles, descriptions, and content must be in ${getContentLanguage()}
 
-**For Auditory Learners (${formData.learningStyle.includes('Auditory') ? 'YES' : 'NO'}):**
-   - **Video:** [Clear, concise title] - [Audio explanation/lecture]
-   - **Video:** [Clear, concise title] - [Verbal instruction]
-   - **PDF:** [Clear, concise title] - [Written transcript/notes]
+**TRAINING PLAN STRUCTURE:**
+Create EXACTLY ${adjustedWeeks} weeks with this format:
 
-**IMPORTANT:** Keep titles short and clear (max 50 characters). Avoid hashtags, long descriptions, or technical jargon in titles.
+## Week X: [Specific Topic for ${formData.currentRole}]
 
-**CRITICAL FORMAT REQUIREMENTS:**
-- Use exactly this format for each week: ## Week X: [Topic]
-- Use exactly this format for each resource: - **Video:** [Title] - [Description]
-- Always include 2-3 resources per week
-- Always use Video, PDF, or Interactive as the type
+**Learning Objectives:**
+- [Role-specific objective 1]
+- [Equipment-specific objective 2]
+- [Skill-gap focused objective 3]
 
-Example format:
-## Week 1: PLC Programming Basics
-- **Video:** PLC Introduction - Basic concepts and overview
-- **PDF:** PLC Manual - Complete programming guide
-- **Interactive:** PLC Simulator - Practice programming
+**Resources (2-3 per week):**
+- **[Type]:** [Title] - [Description tailored to ${formData.currentRole}]
+- **[Type]:** [Title] - [Description relating to ${formData.equipmentUsed.join(', ')}]
 
-## Week 2: Electrical Systems
-- **Video:** Electrical Basics - Understanding circuits
-- **PDF:** Electrical Guide - Safety and procedures
-- **Interactive:** Circuit Simulator - Build and test circuits
+**CRITICAL REQUIREMENTS:**
+1. **Week Progression:** Start with ${getPrioritySkills()}, progress to advanced topics
+2. **Equipment Focus:** Each week must relate to ${formData.equipmentUsed.join(', ')} when possible
+3. **Role Relevance:** All content must be relevant to ${formData.currentRole} and ${formData.position}
+4. **Development Goal:** Every week should progress toward: "${formData.developmentGoal}"
+5. **Resource Types:** Follow the learning style breakdown above STRICTLY
+6. **Language:** ALL content in ${getContentLanguage()}
 
-Continue for all ${adjustedWeeks} weeks, focusing on the development goal: "${formData.developmentGoal}".
-
-**TIMELINE CONSIDERATIONS:**
-- Target completion: ${targetMonths} month(s)
-- Weekly commitment: ${formData.hoursPerWeek} hours
-- Preferred schedule: ${formData.preferredSchedule}
-- Total estimated hours: ${adjustedWeeks * hoursPerWeek} hours
-
-**PERSONALIZATION REQUIREMENTS:**
-- Start with areas where current skills are 'none' or 'basic'
-- Include equipment-specific training for: ${formData.equipmentUsed.join(', ')}
-- **Learning Style Priority:** 
-  ${formData.learningStyle.includes('Visual') ? '- Prioritize visual resources (videos, diagrams, simulations)' : ''}
-  ${formData.learningStyle.includes('Reading') ? '- Focus on written materials (manuals, documents, guides)' : ''}
-  ${formData.learningStyle.includes('Kinesthetic') ? '- Emphasize hands-on activities and interactive exercises' : ''}
-  ${formData.learningStyle.includes('Auditory') ? '- Include audio explanations and verbal instructions' : ''}
-- **Resource Priority:** 
-  ${formData.knowledgeSource === 'internal' ? '- Use internal company resources when available' : ''}
-  ${formData.knowledgeSource === 'public' ? '- Use external/public resources from the web' : ''}
-  ${formData.knowledgeSource === 'both' ? '- Combine internal and external resources appropriately' : ''}
-- Consider ${formData.preferredSchedule} schedule preferences
-
-**CRITICAL: Provide ALL content in English language for consistency and international standards.**
-
-Make each week progressive, building on previous knowledge and current skill levels.`;
+Continue for all ${adjustedWeeks} weeks, ensuring each week builds toward the development goal while addressing the specific needs of a ${formData.currentRole} working with ${formData.equipmentUsed.join(', ')}.`;
   }
 
   static buildContentPrompt(module, formData) {
