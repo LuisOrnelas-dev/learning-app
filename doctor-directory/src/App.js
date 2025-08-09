@@ -872,13 +872,8 @@ export default function HexpolTrainingForm() {
       const context = `Employee: ${formData.fullName}, Role: ${formData.currentRole}, Learning Style: ${formData.learningStyle}, Current Progress: ${overallProgress}%`;
       let response;
       
-      if (localMode) {
-        response = await OllamaService.generateChatbotResponse(message, context);
-      } else if (demoMode) {
-        response = await DemoService.generateChatbotResponse(message, context);
-      } else {
-        response = await OpenAIService.generateChatbotResponse(message, context);
-      }
+      // Always use OpenAI Service for consistent responses
+      response = await OpenAIService.generateChatbotResponse(message, context);
       
       const botMessage = {
         id: Date.now() + 1,
@@ -1257,14 +1252,9 @@ export default function HexpolTrainingForm() {
 
   // Función optimizada para generar el curso
   const generateCourse = useCallback(async () => {
-    if (!apiKey && !demoMode) {
-      setShowApiConfig(true);
-      return;
-    }
-
     setIsGenerating(true);
     setGenerationError(null);
-          setGenerationStatus(demoMode ? 'Generating demonstration plan...' : 'Starting generation...');
+    setGenerationStatus('Generating personalized training plan...');
     
     try {
       // Guardar datos del formulario en localStorage para uso posterior
@@ -1273,13 +1263,8 @@ export default function HexpolTrainingForm() {
       
       let response;
       
-      if (localMode) {
-        response = await OllamaService.generateTrainingPlan(formData);
-      } else if (demoMode) {
-        response = await DemoService.generateTrainingPlan(formData);
-      } else {
-        response = await OpenAIService.generateTrainingPlan(formData);
-      }
+      // Always use OpenAI Service for personalized training plans
+      response = await OpenAIService.generateTrainingPlan(formData);
       
       setGeneratedCourse(response);
       setActiveTab('course');
