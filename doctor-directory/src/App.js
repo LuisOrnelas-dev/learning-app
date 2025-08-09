@@ -1752,7 +1752,7 @@ export default function HexpolTrainingForm() {
               </button>
             </div>
             <div className="mt-3 text-xs text-gray-500 text-center">
-              El tutor está aquí para ayudarte con tu aprendizaje
+              Your tutor is here to help you with your learning
             </div>
           </form>
         </div>
