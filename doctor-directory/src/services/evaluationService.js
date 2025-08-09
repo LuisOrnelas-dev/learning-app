@@ -1,46 +1,77 @@
 // Service to handle evaluations
 export class EvaluationService {
-  // Generate specific questions based on week content
-  static generateWeekQuestions(weekTitle, weekContent, formData = {}) {
-    const allQuestions = [];
-    const usedQuestions = new Set(); // Para evitar duplicados
-    
-    // Extraer temas clave del título de la semana
-    const topics = this.extractTopicsFromTitle(weekTitle);
-    
-    // Generar preguntas basadas en los temas
-    topics.forEach((topic, index) => {
-      const topicQuestions = this.generateQuestionsForTopic(topic, weekContent, index * 3);
-      allQuestions.push(...topicQuestions);
-    });
-    
-    // Si no hay suficientes preguntas, agregar preguntas generales
-    while (allQuestions.length < 10) {
-      const generalQuestions = this.generateGeneralQuestions(weekTitle, allQuestions.length);
-      allQuestions.push(...generalQuestions);
-    }
-    
-    // Filtrar duplicados basándose en el texto de la pregunta
-    const uniqueQuestions = [];
-    allQuestions.forEach(question => {
-      const questionKey = question.question.toLowerCase().trim();
-      if (!usedQuestions.has(questionKey)) {
-        usedQuestions.add(questionKey);
-        uniqueQuestions.push(question);
+  // Generate specific questions based on week content using OpenAI
+  static async generateWeekQuestions(weekTitle, weekContent, formData = {}) {
+    try {
+      // Detectar idioma
+      const isSpanish = (formData.language || '').toLowerCase().includes('spanish') || 
+                        (formData.language || '').toLowerCase().includes('español');
+      const language = isSpanish ? 'Spanish' : 'English';
+      
+      // Generar preguntas dinámicamente con OpenAI
+      const { OpenAIService } = await import('./openaiService');
+      
+      // Crear contexto de los recursos de la semana
+      const resourceContext = weekContent.map(resource => 
+        `- ${resource.title}: ${resource.description || ''}`
+      ).join('\n');
+      
+      const prompt = `Create 5 challenging multiple-choice questions for a technical evaluation about: "${weekTitle}"
+
+CONTEXT:
+- Week Topic: ${weekTitle}
+- Resources covered:
+${resourceContext}
+- Student Role: ${formData.currentRole || 'Maintenance Technician'}
+- Equipment: ${(formData.equipmentUsed || []).join(', ')}
+- Development Goal: ${formData.developmentGoal || 'Technical skills improvement'}
+- Language: ${language}
+
+REQUIREMENTS:
+- Create CHALLENGING questions (intermediate to advanced level)
+- Questions should be specific to the week topic
+- Include technical details and practical scenarios
+- Each question must have exactly 4 options
+- Mark the correct answer clearly
+- Provide detailed explanations
+- Questions should test understanding, application, and analysis
+- Make questions relevant to ${formData.currentRole || 'maintenance technician'} work
+
+FORMAT (JSON):
+[
+  {
+    "id": 1,
+    "question": "Question text here",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correct": 0,
+    "explanation": "Detailed explanation of why this answer is correct",
+    "category": "topic_category"
+  }
+]
+
+CRITICAL: Write everything in ${language}. Create exactly 5 questions in valid JSON format.`;
+
+      console.log('🧠 Generating dynamic questions for:', weekTitle);
+      const response = await OpenAIService.generateContentDirectly(prompt);
+      
+      // Parsear la respuesta JSON
+      try {
+        const questions = JSON.parse(response);
+        if (Array.isArray(questions) && questions.length > 0) {
+          console.log('✅ Generated', questions.length, 'dynamic questions');
+          return questions;
+        }
+      } catch (parseError) {
+        console.warn('Failed to parse OpenAI response, using fallback questions');
       }
-    });
-    
-    // Mezclar las preguntas únicas y tomar las primeras 10
-    let finalQuestions = this.shuffleArray(uniqueQuestions).slice(0, 10);
-    
-    // Traducir a español si es necesario
-    const isSpanish = (formData.language || '').toLowerCase().includes('spanish') || 
-                      (formData.language || '').toLowerCase().includes('español');
-    if (isSpanish) {
-      finalQuestions = this.translateQuestionsToSpanish(finalQuestions);
+      
+    } catch (error) {
+      console.error('Error generating dynamic questions:', error);
     }
     
-    return finalQuestions;
+    // Fallback a preguntas estáticas si falla OpenAI
+    console.log('🔄 Using fallback static questions');
+    return this.generateFallbackQuestions(weekTitle, formData);
   }
   
   // Extraer temas del título de la semana
@@ -618,7 +649,151 @@ export class EvaluationService {
     }
   }
   
-  // Traducir preguntas a español (traducción básica)
+  // Generar preguntas de fallback cuando OpenAI falla
+  static generateFallbackQuestions(weekTitle, formData = {}) {
+    const isSpanish = (formData.language || '').toLowerCase().includes('spanish') || 
+                      (formData.language || '').toLowerCase().includes('español');
+    
+    if (isSpanish) {
+      return [
+        {
+          id: 1,
+          question: "¿Cuál es el primer paso en cualquier procedimiento de seguridad antes de trabajar en equipos?",
+          options: [
+            "Procedimientos de Bloqueo/Etiquetado",
+            "Encender el equipo", 
+            "Llamar a un supervisor",
+            "Solo ponerse guantes"
+          ],
+          correct: 0,
+          explanation: "Los procedimientos de Bloqueo/Etiquetado son críticos para la seguridad.",
+          category: "safety"
+        },
+        {
+          id: 2,
+          question: "¿Qué función principal tiene una bomba hidráulica?",
+          options: [
+            "Convertir energía mecánica a energía hidráulica",
+            "Filtrar el fluido hidráulico",
+            "Controlar la temperatura",
+            "Medir la presión"
+          ],
+          correct: 0,
+          explanation: "Las bombas hidráulicas convierten energía mecánica en presión hidráulica.",
+          category: "hydraulics"
+        },
+        {
+          id: 3,
+          question: "¿Cuál es la función principal de un PLC en equipos industriales?",
+          options: [
+            "Controlar procesos automáticamente",
+            "Generar electricidad",
+            "Filtrar señales",
+            "Enfriar equipos"
+          ],
+          correct: 0,
+          explanation: "Los PLCs automatizan y controlan procesos industriales.",
+          category: "plc"
+        },
+        {
+          id: 4,
+          question: `¿Cuál es la aplicación principal de este tema: "${weekTitle}"?`,
+          options: [
+            "Mejorar eficiencia operacional",
+            "Reducir costos únicamente",
+            "Aumentar personal",
+            "Eliminar equipos"
+          ],
+          correct: 0,
+          explanation: "El objetivo principal es mejorar la eficiencia y confiabilidad operacional.",
+          category: "general"
+        },
+        {
+          id: 5,
+          question: "¿Qué consideración es más importante en mantenimiento industrial?",
+          options: [
+            "Seguridad del personal",
+            "Velocidad de reparación",
+            "Costo de materiales",
+            "Apariencia del equipo"
+          ],
+          correct: 0,
+          explanation: "La seguridad del personal siempre debe ser la prioridad número uno.",
+          category: "safety"
+        }
+      ];
+    } else {
+      return [
+        {
+          id: 1,
+          question: "What is the first step in any safety procedure before working on equipment?",
+          options: [
+            "Lockout/Tagout procedures",
+            "Start the equipment",
+            "Call a supervisor",
+            "Put on gloves only"
+          ],
+          correct: 0,
+          explanation: "Lockout/Tagout procedures are critical for safety.",
+          category: "safety"
+        },
+        {
+          id: 2,
+          question: "What is the primary function of a hydraulic pump?",
+          options: [
+            "Convert mechanical energy to hydraulic energy",
+            "Filter hydraulic fluid",
+            "Control temperature",
+            "Measure pressure"
+          ],
+          correct: 0,
+          explanation: "Hydraulic pumps convert mechanical energy to hydraulic pressure.",
+          category: "hydraulics"
+        },
+        {
+          id: 3,
+          question: "What is the main function of a PLC in industrial equipment?",
+          options: [
+            "Control processes automatically",
+            "Generate electricity",
+            "Filter signals",
+            "Cool equipment"
+          ],
+          correct: 0,
+          explanation: "PLCs automate and control industrial processes.",
+          category: "plc"
+        },
+        {
+          id: 4,
+          question: `What is the main application of this topic: "${weekTitle}"?`,
+          options: [
+            "Improve operational efficiency",
+            "Reduce costs only",
+            "Increase personnel",
+            "Remove equipment"
+          ],
+          correct: 0,
+          explanation: "The main goal is to improve operational efficiency and reliability.",
+          category: "general"
+        },
+        {
+          id: 5,
+          question: "What consideration is most important in industrial maintenance?",
+          options: [
+            "Personnel safety",
+            "Repair speed",
+            "Material cost",
+            "Equipment appearance"
+          ],
+          correct: 0,
+          explanation: "Personnel safety should always be the number one priority.",
+          category: "safety"
+        }
+      ];
+    }
+  }
+
+  // Traducir preguntas a español (traducción básica) - DEPRECATED
   static translateQuestionsToSpanish(questions) {
     return questions.map((question, index) => {
       // Para simplificar, usar preguntas pre-traducidas básicas

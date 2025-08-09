@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { FaClipboardCheck, FaUserTie, FaSignature, FaFileAlt, FaCheckCircle, FaTimesCircle, FaEye, FaEyeSlash, FaDownload, FaPrint } from 'react-icons/fa';
 
 // Component for theoretical evaluation
@@ -11,9 +11,31 @@ const TheoreticalEvaluation = ({ module, onComplete, formData }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   // Generate questions based on the module using the new service
-  const questions = useMemo(() => {
-    const { EvaluationService } = require('../services/evaluationService');
-    return EvaluationService.generateWeekQuestions(module.title, module.resources || [], formData);
+  const [questions, setQuestions] = useState([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
+  
+  // Load questions asynchronously
+  useEffect(() => {
+    const loadQuestions = async () => {
+      setLoadingQuestions(true);
+      try {
+        const { EvaluationService } = await import('../services/evaluationService');
+        const generatedQuestions = await EvaluationService.generateWeekQuestions(
+          module.title, 
+          module.resources || [], 
+          formData
+        );
+        setQuestions(generatedQuestions);
+      } catch (error) {
+        console.error('Error loading questions:', error);
+        // Usar preguntas de fallback en caso de error
+        setQuestions([]);
+      } finally {
+        setLoadingQuestions(false);
+      }
+    };
+    
+    loadQuestions();
   }, [module.title, module.resources, formData]);
 
   const calculateScore = useCallback(() => {
@@ -164,6 +186,42 @@ const TheoreticalEvaluation = ({ module, onComplete, formData }) => {
             className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
           >
             Complete & Return to Course
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state while generating questions
+  if (loadingQuestions) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="text-center">
+          <FaFileAlt className="text-4xl text-blue-600 mx-auto mb-4 animate-pulse" />
+          <h3 className="text-2xl font-bold mb-2">Generating Evaluation Questions</h3>
+          <p className="text-gray-600">Creating personalized questions for: {module.title}</p>
+          <div className="mt-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="text-sm text-gray-500 mt-2">🧠 Using AI to generate challenging questions...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no questions loaded
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="text-center">
+          <FaFileAlt className="text-4xl text-red-600 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold mb-2">Error Loading Questions</h3>
+          <p className="text-gray-600">Could not generate questions for: {module.title}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Try Again
           </button>
         </div>
       </div>
