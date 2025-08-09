@@ -1689,7 +1689,7 @@ export default function HexpolTrainingForm() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">TechFlow Tutor</h3>
-                  <p className="text-blue-100 text-sm">Tu guía personal de aprendizaje</p>
+                  <p className="text-blue-100 text-sm">Your personal learning guide</p>
                 </div>
               </div>
               <button
