@@ -624,8 +624,8 @@ export default function HexpolTrainingForm() {
       let currentResources = [];
 
       for (const line of lines) {
-        // Detectar semanas
-        if (line.startsWith('## Week')) {
+        // Detectar semanas (en inglés "Week" o español "Semana")
+        if (line.startsWith('## Week') || line.startsWith('## Semana')) {
           if (currentWeek) {
             weeks.push({
               ...currentWeek,
@@ -633,7 +633,7 @@ export default function HexpolTrainingForm() {
             });
           }
           
-          const weekMatch = line.match(/## Week (\d+): (.+)/);
+          const weekMatch = line.match(/## (?:Week|Semana) (\d+): (.+)/);
           if (weekMatch) {
             currentWeek = {
               weekNumber: parseInt(weekMatch[1]),
