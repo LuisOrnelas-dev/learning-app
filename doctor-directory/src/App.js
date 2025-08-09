@@ -1546,40 +1546,21 @@ export default function HexpolTrainingForm() {
 
   // Función optimizada para generar contenido adicional
   const generateAdditionalContent = useCallback(async () => {
-    if (!apiKey && !demoMode) {
-      setShowApiConfig(true);
-      return;
-    }
-
     setIsGenerating(true);
     try {
-      let additionalContent;
-      
-      if (localMode) {
-        additionalContent = await OllamaService.generateTrainingContent(
-          { title: "Additional Training Content" },
-          formData
-        );
-      } else if (demoMode) {
-        additionalContent = await DemoService.generateTrainingContent(
-          { title: "Additional Training Content" },
-          formData
-        );
-      } else {
-        additionalContent = await OpenAIService.generateTrainingContent(
-          { title: "Additional Training Content" },
-          formData
-        );
-      }
+      const additionalContent = await OpenAIService.generateTrainingContent(
+        { title: "Additional Training Content" },
+        formData
+      );
       
       const newResource = {
         id: Date.now(),
-        title: demoMode ? "Demo-Generated Content" : "AI-Generated Additional Content",
+        title: "AI-Generated Additional Content",
         type: "interactive",
         duration: "30 min",
         url: "#",
         completed: false,
-        description: demoMode ? "Contenido de demostración generado sin API" : "Contento personalizado generado por IA basado en tu perfil",
+        description: "Contento personalizado generado por IA basado en tu perfil",
         aiContent: additionalContent
       };
       
@@ -1589,7 +1570,7 @@ export default function HexpolTrainingForm() {
     } finally {
       setIsGenerating(false);
     }
-  }, [apiKey, demoMode, localMode, formData]);
+  }, [formData]);
 
   // 5. Renderizado condicional
   return (
