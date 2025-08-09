@@ -198,14 +198,61 @@ Format as an interactive training module with clear sections.`;
     }
   }
 
-  // Generate instructions for interactive canvas
-  static generateInteractiveInstructions(title, topic, formData) {
-    const instructions = [];
-    const contentLanguage = this.getContentLanguage(formData);
+  // Generate instructions for interactive canvas (dynamic with OpenAI)
+  static async generateInteractiveInstructions(title, topic, formData) {
+    try {
+      const contentLanguage = this.getContentLanguage(formData);
+      
+      const prompt = `Generate 5 specific drawing/design instructions for an interactive canvas exercise about: "${title}"
+
+CONTEXT:
+- Role: ${formData.currentRole}
+- Equipment: ${formData.equipmentUsed.join(', ')}
+- Development Goal: ${formData.developmentGoal}
+- Language: ${contentLanguage}
+
+REQUIREMENTS:
+- Create practical, hands-on drawing/sketching instructions
+- Focus on diagrams, flowcharts, schematics, or visual representations
+- Make them specific to the topic "${title}"
+- Suitable for industrial/technical training
+- Each instruction should be actionable (start with verbs like "Draw", "Sketch", "Create", "Design")
+- Instructions should be progressive (from basic to more complex)
+
+FORMAT: Return ONLY a simple array of 5 instructions, one per line, no bullets or numbering.
+
+Example format:
+Draw a basic system overview diagram
+Sketch the main components and their connections  
+Create a troubleshooting flowchart
+Design a maintenance procedure diagram
+Illustrate safety considerations and warnings
+
+CRITICAL: Write ALL instructions in ${contentLanguage}`;
+
+      const response = await OpenAIService.generateContentDirectly(prompt);
+      
+      // Parse the response into individual instructions
+      const instructions = response
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0 && !line.startsWith('#'))
+        .slice(0, 5); // Take only first 5 instructions
+      
+      return instructions.length > 0 ? instructions : this.getFallbackInstructions(title, contentLanguage);
+      
+    } catch (error) {
+      console.error('Error generating dynamic instructions:', error);
+      const contentLanguage = this.getContentLanguage(formData);
+      return this.getFallbackInstructions(title, contentLanguage);
+    }
+  }
+
+  // Fallback instructions if API fails
+  static getFallbackInstructions(title, contentLanguage) {
     const isSpanish = contentLanguage.includes('Spanish');
-    
-    // Detectar el tipo de contenido basado en el título
     const lowerTitle = title.toLowerCase();
+    const instructions = [];
     
     if (lowerTitle.includes('hydraulic') || lowerTitle.includes('hydraulics') || lowerTitle.includes('hidráulico')) {
       if (isSpanish) {
@@ -294,24 +341,28 @@ Format as an interactive training module with clear sections.`;
       );
     }
     
-    // Agregar instrucciones específicas basadas en el estilo de aprendizaje
-    if (formData.learningStyle.includes('Visual')) {
-      instructions.push(
-        "Use different colors to highlight different system components",
-        "Create visual connections between related concepts",
-        "Draw arrows to show process flow and relationships"
-      );
+    // Generic fallback instructions
+    if (instructions.length === 0) {
+      if (isSpanish) {
+        instructions.push(
+          "Dibuja un diagrama general del sistema",
+          "Etiqueta los componentes principales",
+          "Crea un diagrama de flujo del proceso",
+          "Bosqueja procedimientos de seguridad",
+          "Diseña una lista de verificación visual"
+        );
+      } else {
+        instructions.push(
+          "Draw a general system diagram",
+          "Label the main components",
+          "Create a process flow diagram",
+          "Sketch safety procedures",
+          "Design a visual checklist"
+        );
+      }
     }
     
-    if (formData.learningStyle.includes('Kinesthetic')) {
-      instructions.push(
-        "Practice drawing the system components step by step",
-        "Create a hands-on procedure diagram you can follow",
-        "Draw the sequence of actions for troubleshooting"
-      );
-    }
-    
-    return instructions.join('\n');
+    return instructions;
   }
 
   // Crear PDF de fallback

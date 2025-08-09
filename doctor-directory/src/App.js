@@ -965,7 +965,6 @@ export default function HexpolTrainingForm() {
               {/* Mostrar contenido PDF inline si existe */}
               {inlinePDFContent && resource.type === "pdf" && inlinePDFContent.title === resource.title && (
                 <div key={`${resource.id}-${inlinePDFContent.content.length}`}>
-                  <p className="text-sm text-green-600 mb-2">✅ Content loaded! Length: {inlinePDFContent.content.length} characters</p>
                   <InlinePDFViewer
                     key={`pdf-viewer-${resource.id}-${Date.now()}`}
                     content={inlinePDFContent.content}
@@ -1514,7 +1513,7 @@ export default function HexpolTrainingForm() {
         const { ContentGenerationService } = await import('./services/contentGenerationService');
         
         try {
-          const instructions = ContentGenerationService.generateInteractiveInstructions(title, 'industrial', formData);
+          const instructions = await ContentGenerationService.generateInteractiveInstructions(title, 'industrial', formData);
           console.log('=== INTERACTIVE INSTRUCTIONS GENERATED ===');
           setInteractiveInstructions(instructions);
           setInteractiveTitle(title);
@@ -1523,12 +1522,10 @@ export default function HexpolTrainingForm() {
           return;
         } catch (error) {
           console.log('API generation failed, using fallback instructions');
+          const fallbackInstructions = await ContentGenerationService.generateInteractiveInstructions(title, 'industrial', formData);
+          console.log('=== USING FALLBACK INTERACTIVE INSTRUCTIONS ===');
+          setInteractiveInstructions(fallbackInstructions);
         }
-        
-        // Usar instrucciones de fallback si la API falla
-        const fallbackInstructions = ContentGenerationService.generateInteractiveInstructions(title, 'industrial', formData);
-        console.log('=== USING FALLBACK INTERACTIVE INSTRUCTIONS ===');
-        setInteractiveInstructions(fallbackInstructions);
         setInteractiveTitle(title);
         setShowInteractiveCanvas(true);
         setGeneratingResourceId(null);
