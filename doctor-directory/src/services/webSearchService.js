@@ -15,16 +15,24 @@ export class WebSearchService {
     }
 
     try {
-      // Mejorar la búsqueda con términos más específicos según idioma
+      // Mejorar la búsqueda con términos más específicos según idioma y tema
       let enhancedQuery;
       if (language === 'es') {
-        enhancedQuery = `${query} capacitación industrial tutorial español`;
+        enhancedQuery = `${query} capacitación industrial tutorial español mantenimiento`;
       } else {
-        enhancedQuery = `${query} industrial training tutorial`;
+        enhancedQuery = `${query} industrial training tutorial maintenance`;
       }
       
+      // Agregar términos específicos según el tema para mejorar relevancia
+      const topicKeywords = this.extractTopicKeywords(query);
+      if (topicKeywords.length > 0) {
+        enhancedQuery = `${enhancedQuery} ${topicKeywords.join(' ')}`;
+      }
+      
+      console.log(`🔍 Enhanced YouTube search query: ${enhancedQuery}`);
+      
       const response = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(enhancedQuery)}&type=video&maxResults=${maxResults}&key=${this.YOUTUBE_API_KEY}&videoDuration=medium&relevanceLanguage=${language}`
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(enhancedQuery)}&type=video&maxResults=${maxResults}&key=${this.YOUTUBE_API_KEY}&videoDuration=medium&relevanceLanguage=${language}&order=relevance`
       );
       
       if (!response.ok) {
@@ -32,21 +40,79 @@ export class WebSearchService {
       }
 
       const data = await response.json();
-      return data.items.map(item => ({
-        title: item.snippet.title,
-        description: item.snippet.description,
-        videoId: item.id.videoId,
-        url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
-        embedUrl: `https://www.youtube.com/embed/${item.id.videoId}?rel=0&modestbranding=1`,
-        type: 'video',
-        thumbnail: item.snippet.thumbnails?.medium?.url,
-        channelTitle: item.snippet.channelTitle,
-        publishedAt: item.snippet.publishedAt
-      }));
+      
+      // Filtrar resultados por relevancia del título
+      const relevantVideos = data.items
+        .map(item => ({
+          title: item.snippet.title,
+          description: item.snippet.description,
+          videoId: item.id.videoId,
+          url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+          embedUrl: `https://www.youtube.com/embed/${item.id.videoId}?rel=0&modestbranding=1`,
+          type: 'video',
+          thumbnail: item.snippet.thumbnails?.medium?.url,
+          channelTitle: item.snippet.channelTitle,
+          publishedAt: item.snippet.publishedAt,
+          relevanceScore: this.calculateRelevanceScore(query, item.snippet.title, item.snippet.description)
+        }))
+        .sort((a, b) => b.relevanceScore - a.relevanceScore)
+        .slice(0, maxResults);
+      
+      console.log(`✅ Found ${relevantVideos.length} relevant videos for: ${query}`);
+      return relevantVideos;
     } catch (error) {
       console.error('Error searching YouTube:', error);
       return [];
     }
+  }
+
+  // Extraer palabras clave del tema para mejorar la búsqueda
+  static extractTopicKeywords(query) {
+    const queryLower = query.toLowerCase();
+    const keywords = [];
+    
+    // Palabras clave específicas por tema
+    if (queryLower.includes('lockout') || queryLower.includes('tagout') || queryLower.includes('loto')) {
+      keywords.push('safety', 'lockout', 'tagout', 'maintenance', 'procedures');
+    } else if (queryLower.includes('plc') || queryLower.includes('siemens')) {
+      keywords.push('plc', 'programming', 'automation', 'control', 'siemens');
+    } else if (queryLower.includes('hydraulic') || queryLower.includes('hidráulico')) {
+      keywords.push('hydraulic', 'fluid', 'power', 'pump', 'valve');
+    } else if (queryLower.includes('pneumatic') || queryLower.includes('neumático')) {
+      keywords.push('pneumatic', 'air', 'compressor', 'cylinder', 'valve');
+    } else if (queryLower.includes('electrical') || queryLower.includes('eléctrico')) {
+      keywords.push('electrical', 'circuit', 'wiring', 'control', 'safety');
+    } else if (queryLower.includes('troubleshooting') || queryLower.includes('diagnóstico')) {
+      keywords.push('troubleshooting', 'diagnostic', 'repair', 'maintenance', 'problems');
+    }
+    
+    return keywords;
+  }
+
+  // Calcular puntuación de relevancia del video
+  static calculateRelevanceScore(query, title, description) {
+    const queryWords = query.toLowerCase().split(/\s+/);
+    const titleLower = title.toLowerCase();
+    const descriptionLower = description.toLowerCase();
+    
+    let score = 0;
+    
+    // Puntuación por coincidencias en el título
+    queryWords.forEach(word => {
+      if (titleLower.includes(word)) score += 3;
+      if (descriptionLower.includes(word)) score += 1;
+    });
+    
+    // Bonus por coincidencias exactas
+    if (titleLower.includes(query.toLowerCase())) score += 5;
+    
+    // Penalización por palabras irrelevantes
+    const irrelevantWords = ['music', 'song', 'game', 'movie', 'entertainment'];
+    irrelevantWords.forEach(word => {
+      if (titleLower.includes(word) || descriptionLower.includes(word)) score -= 2;
+    });
+    
+    return Math.max(0, score);
   }
 
   // Buscar documentos/PDFs con Google Custom Search

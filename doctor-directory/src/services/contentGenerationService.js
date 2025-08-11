@@ -203,7 +203,7 @@ Format as an interactive training module with clear sections.`;
     try {
       const contentLanguage = this.getContentLanguage(formData);
       
-      const prompt = `Generate 5 specific drawing/design instructions for an interactive canvas exercise about: "${title}"
+      const prompt = `Generate 5 SPECIFIC and DETAILED drawing/design instructions for an interactive canvas exercise about: "${title}"
 
 CONTEXT:
 - Role: ${formData.currentRole}
@@ -212,23 +212,27 @@ CONTEXT:
 - Language: ${contentLanguage}
 
 REQUIREMENTS:
-- Create practical, hands-on drawing/sketching instructions
-- Focus on diagrams, flowcharts, schematics, or visual representations
-- Make them specific to the topic "${title}"
-- Suitable for industrial/technical training
-- Each instruction should be actionable (start with verbs like "Draw", "Sketch", "Create", "Design")
+- Each instruction must be HIGHLY SPECIFIC to the topic "${title}"
+- Focus on practical, hands-on diagrams that relate directly to the user's role and equipment
+- Make instructions actionable and measurable (start with verbs like "Draw", "Sketch", "Create", "Design")
+- Include specific details about what components, labels, or elements should be included
 - Instructions should be progressive (from basic to more complex)
+- Each instruction should have a clear deliverable that can be evaluated
 
-FORMAT: Return ONLY a simple array of 5 instructions, one per line, no bullets or numbering.
+FORMAT: Return ONLY a simple array of 5 detailed instructions, one per line, no bullets or numbering.
 
-Example format:
-Draw a basic system overview diagram
-Sketch the main components and their connections  
-Create a troubleshooting flowchart
-Design a maintenance procedure diagram
-Illustrate safety considerations and warnings
+Example format for PLC topic:
+Draw a complete PLC ladder logic diagram showing START button, STOP button, and motor control with proper NO/NC contacts
+Sketch a detailed I/O mapping diagram showing all input sensors and output actuators connected to the PLC
+Create a troubleshooting flowchart with 5 specific PLC error conditions and their diagnostic steps
+Design a preventive maintenance checklist diagram showing 8 key inspection points for PLC systems
+Illustrate a safety interlock circuit diagram showing emergency stop, safety door, and machine guard connections
 
-CRITICAL: Write ALL instructions in ${contentLanguage}`;
+CRITICAL: 
+- Write ALL instructions in ${contentLanguage}
+- Make them SPECIFIC to "${title}" topic
+- Include measurable deliverables
+- Focus on practical application for ${formData.currentRole}`;
 
       const response = await OpenAIService.generateContentDirectly(prompt);
       
@@ -246,6 +250,184 @@ CRITICAL: Write ALL instructions in ${contentLanguage}`;
       const contentLanguage = this.getContentLanguage(formData);
       return this.getFallbackInstructions(title, contentLanguage).join('\n');
     }
+  }
+
+  // Generate dynamic evaluation criteria using OpenAI
+  static async generateEvaluationCriteria(title, instructions, formData) {
+    try {
+      const contentLanguage = this.getContentLanguage(formData);
+      
+      const prompt = `Generate SPECIFIC evaluation criteria for each of these 5 interactive canvas instructions about: "${title}"
+
+INSTRUCTIONS:
+${instructions}
+
+CONTEXT:
+- Role: ${formData.currentRole}
+- Equipment: ${formData.equipmentUsed.join(', ')}
+- Development Goal: ${formData.developmentGoal}
+- Language: ${contentLanguage}
+
+REQUIREMENTS:
+- Generate 5 specific evaluation criteria for EACH instruction (25 total criteria)
+- Each criterion must be specific to the instruction and topic
+- Focus on measurable, observable elements
+- Include technical accuracy, completeness, and professional standards
+- Make criteria actionable and clear for self-assessment
+
+FORMAT: Return a JSON array with this exact structure:
+[
+  {
+    "id": 0,
+    "instruction": "instruction text here",
+    "criteria": [
+      "specific criterion 1",
+      "specific criterion 2", 
+      "specific criterion 3",
+      "specific criterion 4",
+      "specific criterion 5"
+    ],
+    "maxScore": 5
+  }
+]
+
+EXAMPLE for PLC instruction "Draw a complete PLC ladder logic diagram":
+{
+  "id": 0,
+  "instruction": "Draw a complete PLC ladder logic diagram showing START button, STOP button, and motor control with proper NO/NC contacts",
+  "criteria": [
+    "All required components (START, STOP, motor) are clearly drawn and labeled",
+    "NO/NC contact symbols are correctly used and properly connected",
+    "Ladder logic format follows standard conventions with proper rungs",
+    "Power flow path is logical and complete from input to output",
+    "Component values and specifications are indicated where relevant"
+  ],
+  "maxScore": 5
+}
+
+CRITICAL: 
+- Write ALL criteria in ${contentLanguage}
+- Make them SPECIFIC to "${title}" topic and each instruction
+- Focus on technical accuracy and professional standards
+- Return ONLY valid JSON format`;
+
+      const response = await OpenAIService.generateContentDirectly(prompt);
+      
+      try {
+        // Try to parse the response as JSON
+        const parsedCriteria = JSON.parse(response);
+        
+        // Validate the structure
+        if (Array.isArray(parsedCriteria) && parsedCriteria.length > 0) {
+          console.log('✅ Successfully generated dynamic evaluation criteria');
+          return parsedCriteria;
+        } else {
+          throw new Error('Invalid criteria structure');
+        }
+      } catch (parseError) {
+        console.error('Failed to parse OpenAI response as JSON:', parseError);
+        console.log('Raw response:', response);
+        throw new Error('Invalid JSON response from OpenAI');
+      }
+      
+    } catch (error) {
+      console.error('Error generating dynamic evaluation criteria:', error);
+      // Fallback to static criteria
+      const contentLanguage = this.getContentLanguage(formData);
+      return this.generateFallbackEvaluationCriteria(title, instructions, contentLanguage);
+    }
+  }
+
+  // Fallback evaluation criteria if OpenAI fails
+  static generateFallbackEvaluationCriteria(title, instructions, contentLanguage) {
+    const isSpanish = contentLanguage.includes('Spanish');
+    
+    // Generate basic criteria based on instruction type
+    return instructions.split('\n').map((instruction, index) => {
+      const instructionLower = instruction.toLowerCase();
+      let criteria = {
+        id: index,
+        instruction: instruction,
+        criteria: [],
+        maxScore: 5
+      };
+      
+      // Generate specific criteria based on instruction type
+      if (instructionLower.includes('diagram') || instructionLower.includes('diagrama')) {
+        criteria.criteria = isSpanish ? [
+          'Todos los componentes requeridos están incluidos',
+          'Los componentes están correctamente etiquetados',
+          'Las conexiones se muestran claramente',
+          'El diseño está organizado y es legible',
+          'Sigue las convenciones estándar de diagramas'
+        ] : [
+          'All required components are included',
+          'Components are properly labeled',
+          'Connections are clearly shown',
+          'Layout is organized and readable',
+          'Follows standard diagram conventions'
+        ];
+      } else if (instructionLower.includes('flowchart') || instructionLower.includes('flujo')) {
+        criteria.criteria = isSpanish ? [
+          'Todos los puntos de decisión están incluidos',
+          'La dirección del flujo es clara',
+          'La lógica de decisión es correcta',
+          'Todos los caminos llevan a resultados',
+          'El formato sigue los estándares de flowchart'
+        ] : [
+          'All decision points are included',
+          'Flow direction is clear',
+          'Decision logic is correct',
+          'All paths lead to outcomes',
+          'Format follows flowchart standards'
+        ];
+      } else if (instructionLower.includes('checklist') || instructionLower.includes('lista')) {
+        criteria.criteria = isSpanish ? [
+          'Todos los elementos requeridos están listados',
+          'Los elementos están en orden lógico',
+          'El formato es claro y legible',
+          'Incluye el número apropiado de elementos',
+          'Sigue las mejores prácticas de checklist'
+        ] : [
+          'All required items are listed',
+          'Items are in logical order',
+          'Format is clear and readable',
+          'Includes appropriate number of items',
+          'Follows checklist best practices'
+        ];
+      } else if (instructionLower.includes('safety') || instructionLower.includes('seguridad')) {
+        criteria.criteria = isSpanish ? [
+          'Todos los elementos de seguridad están incluidos',
+          'Los procedimientos están en el orden correcto',
+          'Las advertencias de seguridad son prominentes',
+          'Sigue los estándares de seguridad',
+          'Los procedimientos de emergencia son claros'
+        ] : [
+          'All safety elements are included',
+          'Procedures are in correct order',
+          'Safety warnings are prominent',
+          'Follows safety standards',
+          'Clear emergency procedures'
+        ];
+      } else {
+        // Generic criteria for other types
+        criteria.criteria = isSpanish ? [
+          'Todos los elementos requeridos están presentes',
+          'La información es precisa y relevante',
+          'El diseño es claro y organizado',
+          'Sigue los estándares técnicos',
+          'Cumple con los requisitos de la instrucción'
+        ] : [
+          'All required elements are present',
+          'Information is accurate and relevant',
+          'Layout is clear and organized',
+          'Follows technical standards',
+          'Meets the instruction requirements'
+        ];
+      }
+      
+      return criteria;
+    });
   }
 
   // Fallback instructions if API fails
@@ -289,29 +471,39 @@ CRITICAL: Write ALL instructions in ${contentLanguage}`;
         "Draw a maintenance schedule flowchart"
       );
     } else if (lowerTitle.includes('safety') || lowerTitle.includes('ehs')) {
-      instructions.push(
-        "Draw a safety procedure flowchart for equipment startup",
-        "Create a hazard identification diagram for your work area",
-        "Sketch a PPE selection guide with different scenarios",
-        "Draw an emergency response procedure diagram",
-        "Create a safety inspection checklist diagram"
-      );
-    } else if (lowerTitle.includes('plc') || lowerTitle.includes('programming') || lowerTitle.includes('siemens')) {
       if (isSpanish) {
         instructions.push(
-          "Dibuja un diagrama básico de lógica ladder de PLC para una función de control simple",
-          "Bosqueja un diagrama de bloques del sistema PLC mostrando entradas, CPU y salidas",
-          "Crea un diagrama de flujo de programación para una operación específica",
-          "Dibuja un diagrama de mapeo de E/S para un sistema de control",
-          "Bosqueja un diagrama de solución de problemas para problemas de PLC"
+          "Dibuja un diagrama completo del procedimiento de bloqueo y etiquetado (LOTO) mostrando 6 pasos específicos con símbolos de candado y etiquetas",
+          "Crea un diagrama de identificación de peligros para tu área de trabajo mostrando 5 zonas de riesgo específicas y medidas de control",
+          "Diseña una guía visual de selección de EPP con 4 escenarios diferentes y el equipo de protección requerido para cada uno",
+          "Ilustra un diagrama de procedimiento de respuesta a emergencias con rutas de evacuación y puntos de reunión específicos",
+          "Bosqueja un diagrama de lista de verificación de inspección de seguridad con 8 puntos críticos de verificación antes de comenzar el trabajo"
         );
       } else {
         instructions.push(
-          "Draw a basic PLC ladder logic diagram for a simple control function",
-          "Sketch a PLC system block diagram showing inputs, CPU, and outputs",
-          "Create a programming flowchart for a specific operation",
-          "Draw an I/O mapping diagram for a control system",
-          "Sketch a troubleshooting flowchart for PLC problems"
+          "Draw a complete lockout/tagout (LOTO) procedure diagram showing 6 specific steps with lock and tag symbols",
+          "Create a hazard identification diagram for your work area showing 5 specific risk zones and control measures",
+          "Design a visual PPE selection guide with 4 different scenarios and required protective equipment for each",
+          "Illustrate an emergency response procedure diagram with evacuation routes and specific meeting points",
+          "Sketch a safety inspection checklist diagram with 8 critical verification points before starting work"
+        );
+      }
+    } else if (lowerTitle.includes('plc') || lowerTitle.includes('programming') || lowerTitle.includes('siemens')) {
+      if (isSpanish) {
+        instructions.push(
+          "Dibuja un diagrama completo de lógica ladder de PLC mostrando botón START, STOP y control de motor con contactos NO/NC apropiados",
+          "Bosqueja un diagrama detallado de mapeo de E/S mostrando todos los sensores de entrada y actuadores de salida conectados al PLC",
+          "Crea un diagrama de flujo de solución de problemas con 5 condiciones de error específicas del PLC y sus pasos de diagnóstico",
+          "Diseña un diagrama de lista de verificación de mantenimiento preventivo mostrando 8 puntos clave de inspección para sistemas PLC",
+          "Ilustra un diagrama de circuito de interbloqueo de seguridad mostrando parada de emergencia, puerta de seguridad y conexiones de guarda de máquina"
+        );
+      } else {
+        instructions.push(
+          "Draw a complete PLC ladder logic diagram showing START button, STOP button, and motor control with proper NO/NC contacts",
+          "Sketch a detailed I/O mapping diagram showing all input sensors and output actuators connected to the PLC",
+          "Create a troubleshooting flowchart with 5 specific PLC error conditions and their diagnostic steps",
+          "Design a preventive maintenance checklist diagram showing 8 key inspection points for PLC systems",
+          "Illustrate a safety interlock circuit diagram showing emergency stop, safety door, and machine guard connections"
         );
       }
     } else if (lowerTitle.includes('maintenance') || lowerTitle.includes('preventive')) {

@@ -594,6 +594,10 @@ export default function HexpolTrainingForm() {
   const [interactiveInstructions, setInteractiveInstructions] = useState('');
   const [interactiveTitle, setInteractiveTitle] = useState('');
   
+  // Estados para mensajes de éxito
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  
   // Log para debuggear el estado
   useEffect(() => {
     if (inlinePDFContent) {
@@ -1126,6 +1130,7 @@ export default function HexpolTrainingForm() {
                         instructions={interactiveInstructions}
                         title={interactiveTitle}
                         onSave={handleCanvasSave}
+                        formData={formData}
                       />
                       <div className="mt-4 text-center">
                         <button
@@ -1508,8 +1513,72 @@ export default function HexpolTrainingForm() {
     savedWorks.push(canvasData);
     localStorage.setItem('interactiveWorks', JSON.stringify(savedWorks));
     
-    // Show success message
-    alert('Your work has been saved successfully!');
+    // Show elegant success message
+    setSuccessMessage('Your work has been saved successfully! 🎉');
+    setShowSuccessMessage(true);
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 3000);
+  }, []);
+
+  // Helper function to extract topic keywords for better video search
+  const extractTopicKeywords = useCallback((title) => {
+    const titleLower = title.toLowerCase();
+    const keywords = [];
+    
+    // Palabras clave específicas por tema
+    if (titleLower.includes('lockout') || titleLower.includes('tagout') || titleLower.includes('loto')) {
+      keywords.push('safety', 'lockout', 'tagout', 'maintenance', 'procedures');
+    } else if (titleLower.includes('plc') || titleLower.includes('siemens')) {
+      keywords.push('plc', 'programming', 'automation', 'control', 'siemens');
+    } else if (titleLower.includes('hydraulic') || titleLower.includes('hidráulico')) {
+      keywords.push('hydraulic', 'fluid', 'power', 'pump', 'valve');
+    } else if (titleLower.includes('pneumatic') || titleLower.includes('neumático')) {
+      keywords.push('pneumatic', 'air', 'compressor', 'cylinder', 'valve');
+    } else if (titleLower.includes('electrical') || titleLower.includes('eléctrico')) {
+      keywords.push('electrical', 'circuit', 'wiring', 'control', 'safety');
+    } else if (titleLower.includes('troubleshooting') || titleLower.includes('diagnóstico')) {
+      keywords.push('troubleshooting', 'diagnostic', 'repair', 'maintenance', 'problems');
+    }
+    
+    return keywords;
+  }, []);
+
+  // Helper function to generate fallback search queries
+  const getFallbackQuery = useCallback((title, language) => {
+    const titleLower = title.toLowerCase();
+    
+    if (language === 'es') {
+      if (titleLower.includes('plc') || titleLower.includes('siemens')) {
+        return 'PLC Siemens tutorial capacitación industrial';
+      } else if (titleLower.includes('lockout') || titleLower.includes('tagout')) {
+        return 'lockout tagout seguridad industrial procedimientos';
+      } else if (titleLower.includes('hydraulic') || titleLower.includes('hidráulico')) {
+        return 'sistemas hidráulicos industriales mantenimiento';
+      } else if (titleLower.includes('pneumatic') || titleLower.includes('neumático')) {
+        return 'sistemas neumáticos industriales capacitación';
+      } else if (titleLower.includes('electrical') || titleLower.includes('eléctrico')) {
+        return 'sistemas eléctricos industriales seguridad';
+      } else {
+        return 'mantenimiento industrial capacitación técnica';
+      }
+    } else {
+      if (titleLower.includes('plc') || titleLower.includes('siemens')) {
+        return 'PLC Siemens industrial training tutorial';
+      } else if (titleLower.includes('lockout') || titleLower.includes('tagout')) {
+        return 'lockout tagout industrial safety procedures';
+      } else if (titleLower.includes('hydraulic') || titleLower.includes('hidráulico')) {
+        return 'industrial hydraulic systems maintenance';
+      } else if (titleLower.includes('pneumatic') || titleLower.includes('neumático')) {
+        return 'industrial pneumatic systems training';
+      } else if (titleLower.includes('electrical') || titleLower.includes('eléctrico')) {
+        return 'industrial electrical systems safety';
+      } else {
+        return 'industrial maintenance technical training';
+      }
+    }
   }, []);
 
   // Función para manejar clicks en recursos
@@ -1556,44 +1625,40 @@ export default function HexpolTrainingForm() {
       
       // PASO 1: Intentar con el título EXACTO primero
       console.log('📺 Step 1: Trying exact title search');
-      let youtubeResults = await WebSearchService.searchYouTube(title, 3, searchLanguage);
+      let youtubeResults = await WebSearchService.searchYouTube(title, 5, searchLanguage);
       
       if (youtubeResults.length > 0) {
         const video = youtubeResults[0];
-        console.log('✅ Found YouTube video with exact title:', video.title);
+        console.log('✅ Found YouTube video with exact title:', video.title, 'Relevance score:', video.relevanceScore);
         setSelectedVideo({ videoId: video.videoId, title: video.title });
         return;
       }
       
-      // PASO 2: Si no encuentra nada, usar búsqueda simplificada con keywords
-      console.log('📺 Step 2: Exact title failed, trying simplified search');
-      const keywords = ['PLC', 'Siemens', 'troubleshooting', 'mantenimiento', 'industrial', 'problemas'];
-      const foundKeywords = keywords.filter(keyword => 
-        title.toLowerCase().includes(keyword.toLowerCase())
-      );
-      
-      if (foundKeywords.length > 0) {
-        const simplifiedQuery = foundKeywords.join(' ');
-        console.log('🎯 Using simplified search query:', simplifiedQuery);
-        youtubeResults = await WebSearchService.searchYouTube(simplifiedQuery, 3, searchLanguage);
+      // PASO 2: Si no encuentra nada, usar búsqueda con palabras clave del tema
+      console.log('📺 Step 2: Exact title failed, trying topic-specific search');
+      const topicKeywords = extractTopicKeywords(title);
+      if (topicKeywords.length > 0) {
+        const topicQuery = topicKeywords.join(' ');
+        console.log('🎯 Using topic-specific search query:', topicQuery);
+        youtubeResults = await WebSearchService.searchYouTube(topicQuery, 5, searchLanguage);
         
         if (youtubeResults.length > 0) {
           const video = youtubeResults[0];
-          console.log('✅ Found YouTube video with simplified search:', video.title);
+          console.log('✅ Found YouTube video with topic search:', video.title, 'Relevance score:', video.relevanceScore);
           setSelectedVideo({ videoId: video.videoId, title: video.title });
           return;
         }
       }
       
-      // PASO 3: Búsqueda de fallback con términos súper generales
-      console.log('📺 Step 3: Simplified search failed, trying fallback');
-      const fallbackQuery = searchLanguage === 'es' ? 'PLC Siemens tutorial' : 'PLC Siemens training';
+      // PASO 3: Búsqueda de fallback con términos generales del tema
+      console.log('📺 Step 3: Topic search failed, trying general fallback');
+      const fallbackQuery = getFallbackQuery(title, searchLanguage);
       console.log('🆘 Using fallback search query:', fallbackQuery);
-      const fallbackResults = await WebSearchService.searchYouTube(fallbackQuery, 3, searchLanguage);
+      const fallbackResults = await WebSearchService.searchYouTube(fallbackQuery, 5, searchLanguage);
       
       if (fallbackResults.length > 0) {
         const video = fallbackResults[0];
-        console.log('✅ Found fallback YouTube video:', video.title);
+        console.log('✅ Found fallback YouTube video:', video.title, 'Relevance score:', video.relevanceScore);
         setSelectedVideo({ videoId: video.videoId, title: video.title });
         return;
       }
@@ -1958,18 +2023,15 @@ export default function HexpolTrainingForm() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Current role
                   </label>
-                  <select
+                  <input
+                    type="text"
                     name="currentRole"
                     value={formData.currentRole}
                     onChange={handleChange}
                     required
                     className="w-full p-3 border border-gray-300 rounded-lg"
-                  >
-                    <option value="">Select your role</option>
-                    <option value="Maintenance Technician">Maintenance Technician</option>
-                    <option value="Maintenance Supervisor">Maintenance Supervisor</option>
-                    <option value="Maintenance Planner">Maintenance Planner</option>
-                  </select>
+                    placeholder="e.g., Maintenance Technician, Electrician, PLC Programmer..."
+                  />
                 </div>
                 
 
@@ -1988,8 +2050,6 @@ export default function HexpolTrainingForm() {
                     <option value="1">1 month</option>
                     <option value="2">2 months</option>
                     <option value="3">3 months</option>
-                    <option value="6">6 months</option>
-                    <option value="12">1 year</option>
                   </select>
                 </div>
                 
@@ -3022,6 +3082,18 @@ export default function HexpolTrainingForm() {
               <div className="bg-blue-500 h-2 rounded-full animate-pulse" style={{width: '75%'}}></div>
             </div>
             <p className="text-xs text-gray-400 mt-2">This may take 30-60 seconds</p>
+          </div>
+        </div>
+      )}
+
+      {/* Success Message Toast */}
+      {showSuccessMessage && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 ease-in-out">
+          <div className="flex items-center space-x-2">
+            <div className="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+              <span className="text-sm">✓</span>
+            </div>
+            <span className="font-medium">{successMessage}</span>
           </div>
         </div>
       )}

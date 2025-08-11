@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaEraser, FaPen, FaUndo, FaRedo, FaDownload, FaTrash, FaSave, FaPlay } from 'react-icons/fa';
+import { FaEraser, FaPen, FaUndo, FaRedo, FaDownload, FaTrash, FaSave, FaPlay, FaClipboardCheck } from 'react-icons/fa';
 
-const InteractiveCanvas = ({ instructions, title, onSave }) => {
+const InteractiveCanvas = ({ instructions, title, onSave, formData }) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [tool, setTool] = useState('pen');
@@ -10,22 +10,47 @@ const InteractiveCanvas = ({ instructions, title, onSave }) => {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showInstructions, setShowInstructions] = useState(true);
+  const [showEvaluation, setShowEvaluation] = useState(false);
+  const [evaluationCriteria, setEvaluationCriteria] = useState([]);
+  const [selfAssessment, setSelfAssessment] = useState({});
+  const [isLoadingCriteria, setIsLoadingCriteria] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
-    // Set canvas size
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
     
-    // Set initial background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Save initial state
     saveToHistory();
-  }, []);
+    generateDynamicEvaluationCriteria();
+  }, [instructions, title, formData]);
+
+  const generateDynamicEvaluationCriteria = async () => {
+    if (!instructions || !title || !formData) return;
+    
+    setIsLoadingCriteria(true);
+    try {
+      const { ContentGenerationService } = await import('../services/contentGenerationService');
+      const dynamicCriteria = await ContentGenerationService.generateEvaluationCriteria(title, instructions, formData);
+      
+      if (dynamicCriteria && Array.isArray(dynamicCriteria)) {
+        console.log('✅ Dynamic evaluation criteria loaded:', dynamicCriteria);
+        setEvaluationCriteria(dynamicCriteria);
+      } else {
+        console.warn('⚠️ Dynamic criteria failed, using fallback');
+        setEvaluationCriteria([]);
+      }
+    } catch (error) {
+      console.error('❌ Error generating dynamic criteria:', error);
+      setEvaluationCriteria([]);
+    } finally {
+      setIsLoadingCriteria(false);
+    }
+  };
 
   const saveToHistory = () => {
     const canvas = canvasRef.current;
@@ -126,6 +151,34 @@ const InteractiveCanvas = ({ instructions, title, onSave }) => {
     });
   };
 
+  const handleSelfAssessment = (criteriaId, score) => {
+    setSelfAssessment(prev => ({
+      ...prev,
+      [criteriaId]: score
+    }));
+  };
+
+  const calculateTotalScore = () => {
+    const scores = Object.values(selfAssessment);
+    if (scores.length === 0) return 0;
+    return scores.reduce((sum, score) => sum + score, 0);
+  };
+
+  const calculatePercentage = () => {
+    const totalPossible = evaluationCriteria.reduce((sum, criteria) => sum + criteria.maxScore, 0);
+    if (totalPossible === 0) return 0;
+    return Math.round((calculateTotalScore() / totalPossible) * 100);
+  };
+
+  const getPerformanceFeedback = () => {
+    const percentage = calculatePercentage();
+    if (percentage >= 90) return { text: 'Excellent! You have mastered this topic.', color: 'text-green-600' };
+    if (percentage >= 80) return { text: 'Very good! You have a solid understanding.', color: 'text-blue-600' };
+    if (percentage >= 70) return { text: 'Good! You have a good grasp of the concepts.', color: 'text-yellow-600' };
+    if (percentage >= 60) return { text: 'Fair. Review the areas where you scored lower.', color: 'text-orange-600' };
+    return { text: 'Needs improvement. Consider reviewing the material again.', color: 'text-red-600' };
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
       <div className="flex justify-between items-center mb-4">
@@ -133,12 +186,21 @@ const InteractiveCanvas = ({ instructions, title, onSave }) => {
           <FaPlay className="mr-2 text-blue-600" />
           Interactive Practice: {title}
         </h3>
-        <button
-          onClick={() => setShowInstructions(!showInstructions)}
-          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200"
-        >
-          {showInstructions ? 'Hide' : 'Show'} Instructions
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowInstructions(!showInstructions)}
+            className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200"
+          >
+            {showInstructions ? 'Hide' : 'Show'} Instructions
+          </button>
+          <button
+            onClick={() => setShowEvaluation(!showEvaluation)}
+            className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm hover:bg-green-200 flex items-center gap-1"
+          >
+            <FaClipboardCheck className="text-sm" />
+            {showEvaluation ? 'Hide' : 'Show'} Evaluation
+          </button>
+        </div>
       </div>
 
       {showInstructions && (
@@ -155,7 +217,77 @@ const InteractiveCanvas = ({ instructions, title, onSave }) => {
         </div>
       )}
 
-      {/* Toolbar */}
+      {showEvaluation && (
+        <div className="mb-4 p-4 bg-green-50 rounded-lg border border-green-200">
+          <h4 className="font-semibold text-green-800 mb-3">Self-Assessment Criteria:</h4>
+          
+          {isLoadingCriteria ? (
+            <div className="text-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-2"></div>
+              <p className="text-green-700 text-sm">Generating evaluation criteria with AI...</p>
+            </div>
+          ) : evaluationCriteria.length > 0 ? (
+            <div className="space-y-4">
+              {evaluationCriteria.map((criteria) => (
+                <div key={criteria.id} className="border border-green-200 rounded-lg p-3 bg-white">
+                  <h5 className="font-medium text-green-700 mb-2">{criteria.instruction}</h5>
+                  <div className="space-y-2">
+                    {criteria.criteria.map((criterion, idx) => (
+                      <div key={idx} className="flex items-center justify-between text-sm">
+                        <span className="text-gray-700">{criterion}</span>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((score) => (
+                            <button
+                              key={score}
+                              onClick={() => handleSelfAssessment(criteria.id, score)}
+                              className={`w-6 h-6 rounded text-xs font-medium ${
+                                selfAssessment[criteria.id] === score
+                                  ? 'bg-green-500 text-white'
+                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              }`}
+                            >
+                              {score}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-right">
+                    <span className="text-sm text-gray-600">
+                      Score: {selfAssessment[criteria.id] || 0}/{criteria.maxScore}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              
+              <div className="mt-4 p-3 bg-white rounded-lg border border-green-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h5 className="font-medium text-green-700">Overall Performance</h5>
+                    <p className={`text-sm font-medium ${getPerformanceFeedback().color}`}>
+                      {getPerformanceFeedback().text}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-green-600">
+                      {calculatePercentage()}%
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {calculateTotalScore()}/{evaluationCriteria.reduce((sum, c) => sum + c.maxScore, 0)} points
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-gray-600 text-sm">No evaluation criteria available. Try refreshing the page.</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
         <div className="flex items-center gap-2">
           <button
@@ -241,7 +373,6 @@ const InteractiveCanvas = ({ instructions, title, onSave }) => {
         </div>
       </div>
 
-      {/* Canvas */}
       <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
         <canvas
           ref={canvasRef}
@@ -254,7 +385,6 @@ const InteractiveCanvas = ({ instructions, title, onSave }) => {
         />
       </div>
 
-      {/* Practice Tips */}
       <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
         <h4 className="font-semibold text-yellow-800 mb-2">Practice Tips:</h4>
         <ul className="text-yellow-700 text-sm space-y-1">
@@ -263,10 +393,11 @@ const InteractiveCanvas = ({ instructions, title, onSave }) => {
           <li>• Change colors to organize different concepts</li>
           <li>• Save your work to track your progress</li>
           <li>• Download your practice to keep for reference</li>
+          <li>• Use the AI-generated evaluation criteria to assess your work quality</li>
         </ul>
       </div>
     </div>
   );
 };
 
-export default InteractiveCanvas; 
+export default InteractiveCanvas;
