@@ -1,4 +1,5 @@
 import { OpenAIService } from './openaiService';
+import { InternalResourceService } from './internalResourceService';
 
 export class ContentGenerationService {
   // Helper function to determine content language
@@ -13,6 +14,23 @@ export class ContentGenerationService {
   static async generateRealContent(title, type, topic, formData) {
     try {
       console.log(`Generating real content for: ${title} (${type})`);
+      
+      // Check if we should use internal resources
+      console.log('🔍 DEBUG: formData.knowledgeSource =', formData.knowledgeSource);
+      console.log('🔍 DEBUG: formData =', formData);
+      
+      if (formData.knowledgeSource === 'internal') {
+        console.log('🔍 Using internal resources for content generation');
+        const internalContent = await this.generateFromInternalResources(title, type, topic, formData);
+        if (internalContent) {
+          console.log('✅ Internal content generated successfully');
+          return internalContent;
+        }
+        // If no internal resources, fall back to external generation
+        console.log('⚠️ No internal resources found, falling back to external generation');
+      } else {
+        console.log('🔍 Using external resources for content generation');
+      }
       
       switch (type) {
         case 'pdf':
@@ -249,6 +267,66 @@ CRITICAL:
       console.error('Error generating dynamic instructions:', error);
       const contentLanguage = this.getContentLanguage(formData);
       return this.getFallbackInstructions(title, contentLanguage).join('\n');
+    }
+  }
+
+  // Generate content from internal resources
+  static async generateFromInternalResources(title, type, topic, formData) {
+    try {
+      console.log(`🔍 Searching internal resources for: ${title} (${topic})`);
+      
+      // Search for relevant internal resources
+      const relevantResources = await InternalResourceService.searchInternalResources(topic, formData);
+      
+      if (relevantResources.length === 0) {
+        console.log('❌ No internal resources found for topic:', topic);
+        return null;
+      }
+      
+      console.log(`✅ Found ${relevantResources.length} relevant internal resources:`, relevantResources.map(r => r.title));
+      
+      // Get content from the most relevant resource
+      const primaryResource = relevantResources[0];
+      const resourceContent = await InternalResourceService.getResourceContent(primaryResource.id);
+      
+      // Generate enhanced content using OpenAI with internal resource context
+      const contentLanguage = this.getContentLanguage(formData);
+      const prompt = `Generate comprehensive ${type} content for: "${title}"
+
+TOPIC: ${topic}
+CONTEXT: Industrial training for ${formData.currentRole}
+LEARNING STYLE: ${formData.learningStyle}
+EQUIPMENT: ${formData.equipmentUsed.join(', ')}
+LANGUAGE: ${contentLanguage}
+
+INTERNAL RESOURCE CONTENT:
+${resourceContent.content}
+
+REQUIREMENTS:
+- Base the content on the internal resource provided above
+- Include specific details and procedures from the internal document
+- Maintain consistency with company standards and procedures
+- Focus on practical applications for ${formData.currentRole}
+- Use technical terminology from the internal resource
+- **CRITICAL: Write everything in ${contentLanguage}**
+
+Format as a comprehensive technical document with clear sections.`;
+
+      const generatedContent = await OpenAIService.generateContentDirectly(prompt);
+      
+      return {
+        type: type,
+        title: title,
+        content: generatedContent,
+        url: `internal:${primaryResource.id}`,
+        isGenerated: true,
+        source: 'internal',
+        internalResource: primaryResource.title
+      };
+      
+    } catch (error) {
+      console.error('Error generating content from internal resources:', error);
+      return null;
     }
   }
 

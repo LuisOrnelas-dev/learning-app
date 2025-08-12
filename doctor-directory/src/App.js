@@ -8,6 +8,7 @@ import VideoPlayer from './components/VideoPlayer';
 import PDFViewer from './components/PDFViewer';
 import InlinePDFViewer from './components/InlinePDFViewer';
 import InteractiveCanvas from './components/InteractiveCanvas';
+import PDFUploader from './components/PDFUploader';
 
 // Debounce hook para optimizar búsquedas
 const useDebounce = (value, delay) => {
@@ -1671,6 +1672,23 @@ export default function HexpolTrainingForm() {
     console.log('=== STARTING CONTENT GENERATION ===');
     console.log('No URL found, generating content directly for:', title, type);
     
+    // Check if internal resources are available when knowledge source is internal
+    if (formData.knowledgeSource === 'internal') {
+      console.log('🔍 DEBUG: Checking internal resources for title:', title);
+      const { InternalResourceService } = await import('./services/internalResourceService');
+      const hasInternalResources = await InternalResourceService.hasInternalResources(title);
+      console.log('🔍 DEBUG: hasInternalResources result:', hasInternalResources);
+      
+      if (!hasInternalResources) {
+        console.log('🔍 DEBUG: No internal resources found for title:', title);
+        alert(`No internal resources available for: "${title}"
+        
+This topic is not covered by your internal knowledge base. 
+Please contact your administrator to add relevant documents for this specific topic.`);
+        return;
+      }
+    }
+    
     // Establecer el estado de generación
     setGeneratingResourceId(resource.id);
     
@@ -1680,6 +1698,8 @@ export default function HexpolTrainingForm() {
       
       if (type === 'pdf') {
         console.log('Generating PDF content for:', title);
+        console.log('🔍 DEBUG App.js: formData.knowledgeSource =', formData.knowledgeSource);
+        console.log('🔍 DEBUG App.js: formData =', formData);
         const { ContentGenerationService } = await import('./services/contentGenerationService');
         
         try {
@@ -2070,6 +2090,18 @@ export default function HexpolTrainingForm() {
                   </select>
                 </div>
               </div>
+              
+              {/* PDF Uploader - Only show when internal is selected */}
+              {formData.knowledgeSource === 'internal' && (
+                <div className="border-b border-gray-200 p-6">
+                  <PDFUploader 
+                    onPDFsChange={(uploadedPDFs) => {
+                      console.log('PDFs uploaded:', uploadedPDFs);
+                      // Here you can integrate with InternalResourceService if needed
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Section 2: Technical Areas */}
