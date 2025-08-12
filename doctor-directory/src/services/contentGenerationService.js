@@ -19,15 +19,22 @@ export class ContentGenerationService {
       console.log('🔍 DEBUG: formData.knowledgeSource =', formData.knowledgeSource);
       console.log('🔍 DEBUG: formData =', formData);
       
-      if (formData.knowledgeSource === 'internal') {
+      if (formData.knowledgeSource === 'internal' || formData.knowledgeSource === 'both') {
         console.log('🔍 Using internal resources for content generation');
         const internalContent = await this.generateFromInternalResources(title, type, topic, formData);
         if (internalContent) {
           console.log('✅ Internal content generated successfully');
           return internalContent;
         }
-        // If no internal resources, fall back to external generation
-        console.log('⚠️ No internal resources found, falling back to external generation');
+        
+        if (formData.knowledgeSource === 'both') {
+          // For "both" option, fall back to external generation
+          console.log('🔄 No internal resources found, falling back to external generation for "both" option');
+        } else {
+          // For "internal" only, no fallback
+          console.log('⚠️ No internal resources found, no fallback available for "internal" only');
+          return null;
+        }
       } else {
         console.log('🔍 Using external resources for content generation');
       }

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaUpload, FaTrash, FaEye, FaFilePdf } from 'react-icons/fa';
+import ElegantNotification from './ElegantNotification';
+import ElegantConfirmation from './ElegantConfirmation';
 
 const PDFUploader = ({ onPDFsChange }) => {
   const [uploadedPDFs, setUploadedPDFs] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, pdfId: null, pdfTitle: '' });
 
   // Load uploaded PDFs from localStorage on component mount
   useEffect(() => {
@@ -38,7 +42,10 @@ const PDFUploader = ({ onPDFsChange }) => {
         if (file.type === 'application/pdf') {
           // Check file size (max 10MB)
           if (file.size > 10 * 1024 * 1024) {
-            alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+            setNotification({
+              message: `File "${file.name}" is too large. Maximum size is 10MB.`,
+              type: 'error'
+            });
             continue;
           }
 
@@ -59,17 +66,26 @@ const PDFUploader = ({ onPDFsChange }) => {
 
           newPDFs.push(pdfData);
         } else {
-          alert(`File ${file.name} is not a PDF. Please upload only PDF files.`);
+          setNotification({
+            message: `File "${file.name}" is not a PDF. Please upload only PDF files.`,
+            type: 'warning'
+          });
         }
       }
 
       if (newPDFs.length > 0) {
         setUploadedPDFs(prev => [...prev, ...newPDFs]);
-        alert(`Successfully uploaded ${newPDFs.length} PDF(s)`);
+        setNotification({
+          message: `Successfully uploaded ${newPDFs.length} PDF(s)`,
+          type: 'success'
+        });
       }
     } catch (error) {
       console.error('Error uploading PDFs:', error);
-      alert('Error uploading PDFs. Please try again.');
+      setNotification({
+        message: 'Error uploading PDFs. Please try again.',
+        type: 'error'
+      });
     } finally {
       setIsUploading(false);
       event.target.value = ''; // Reset file input
@@ -118,14 +134,39 @@ const PDFUploader = ({ onPDFsChange }) => {
 
   // Delete uploaded PDF
   const deletePDF = (id) => {
-    if (window.confirm('Are you sure you want to delete this PDF?')) {
-      setUploadedPDFs(prev => prev.filter(pdf => pdf.id !== id));
+    const pdf = uploadedPDFs.find(p => p.id === id);
+    setDeleteConfirmation({
+      isOpen: true,
+      pdfId: id,
+      pdfTitle: pdf ? pdf.title : 'this PDF'
+    });
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = () => {
+    if (deleteConfirmation.pdfId) {
+      setUploadedPDFs(prev => prev.filter(pdf => pdf.id !== deleteConfirmation.pdfId));
+      setNotification({
+        message: 'PDF deleted successfully',
+        type: 'success'
+      });
     }
+    setDeleteConfirmation({ isOpen: false, pdfId: null, pdfTitle: '' });
+  };
+
+  // Handle delete cancellation
+  const handleDeleteCancel = () => {
+    setDeleteConfirmation({ isOpen: false, pdfId: null, pdfTitle: '' });
   };
 
   // View PDF content
   const viewPDF = (pdf) => {
-    alert(`PDF Content Preview:\n\nTitle: ${pdf.title}\n\nContent: ${pdf.content.substring(0, 200)}...`);
+    setNotification({
+      message: `PDF Content Preview: ${pdf.title}`,
+      type: 'info',
+      duration: 8000
+    });
+    // For now, we'll just show the notification. In a full implementation, you might want to show a modal
   };
 
   return (
@@ -215,6 +256,27 @@ const PDFUploader = ({ onPDFsChange }) => {
           <li>• This saves money and ensures content is specific to your company</li>
         </ul>
       </div>
+      
+      {/* Elegant Notifications */}
+      {notification && (
+        <ElegantNotification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
+      
+      {/* Delete Confirmation Modal */}
+      <ElegantConfirmation
+        isOpen={deleteConfirmation.isOpen}
+        title="Delete PDF"
+        message={`Are you sure you want to delete "${deleteConfirmation.pdfTitle}"? This action cannot be undone.`}
+        confirmText="Delete PDF"
+        cancelText="Cancel"
+        confirmType="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 };

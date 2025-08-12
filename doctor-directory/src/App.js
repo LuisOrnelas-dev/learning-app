@@ -9,6 +9,7 @@ import PDFViewer from './components/PDFViewer';
 import InlinePDFViewer from './components/InlinePDFViewer';
 import InteractiveCanvas from './components/InteractiveCanvas';
 import PDFUploader from './components/PDFUploader';
+import ElegantNotification from './components/ElegantNotification';
 
 // Debounce hook para optimizar búsquedas
 const useDebounce = (value, delay) => {
@@ -598,6 +599,7 @@ export default function HexpolTrainingForm() {
   // Estados para mensajes de éxito
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [notification, setNotification] = useState(null);
   
   // Log para debuggear el estado
   useEffect(() => {
@@ -1681,11 +1683,23 @@ export default function HexpolTrainingForm() {
       
       if (!hasInternalResources) {
         console.log('🔍 DEBUG: No internal resources found for title:', title);
-        alert(`No internal resources available for: "${title}"
         
-This topic is not covered by your internal knowledge base. 
-Please contact your administrator to add relevant documents for this specific topic.`);
-        return;
+        if (formData.knowledgeSource === 'both') {
+          // For "both" option, allow fallback to public resources
+          console.log('🔄 No internal resources, falling back to public resources...');
+          setNotification({
+            message: `No internal resources found for: "${title}". Using public resources instead.`,
+            type: 'info'
+          });
+          // Continue with external generation (don't return)
+        } else {
+          // For "internal" only, show warning and stop
+          setNotification({
+            message: `No internal resources available for: "${title}". This topic is not covered by your internal knowledge base. Please contact your administrator to add relevant documents.`,
+            type: 'warning'
+          });
+          return; // Stop execution
+        }
       }
     }
     
@@ -2091,8 +2105,8 @@ Please contact your administrator to add relevant documents for this specific to
                 </div>
               </div>
               
-              {/* PDF Uploader - Only show when internal is selected */}
-              {formData.knowledgeSource === 'internal' && (
+              {/* PDF Uploader - Show when internal or both is selected */}
+              {(formData.knowledgeSource === 'internal' || formData.knowledgeSource === 'both') && (
                 <div className="border-b border-gray-200 p-6">
                   <PDFUploader 
                     onPDFsChange={(uploadedPDFs) => {
@@ -3128,6 +3142,15 @@ Please contact your administrator to add relevant documents for this specific to
             <span className="font-medium">{successMessage}</span>
           </div>
         </div>
+      )}
+      
+      {/* Elegant Notifications */}
+      {notification && (
+        <ElegantNotification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
       )}
     </div>
   );
