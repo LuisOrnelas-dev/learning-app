@@ -1,4 +1,6 @@
 // Service to handle internal resources (PDFs) when knowledge source is internal
+import { BilingualSearchService } from './bilingualSearchService';
+
 export class InternalResourceService {
   
   // List of available internal resources
@@ -77,50 +79,25 @@ export class InternalResourceService {
     
     const topicLower = topic.toLowerCase();
     
-    // Step 1: Try exact keyword matches first
-    let relevantResources = allResources.filter(resource => 
-      resource.topics.some(keyword => 
-        topicLower.includes(keyword.toLowerCase()) ||
-        keyword.toLowerCase().includes(topicLower)
-      )
-    );
-
-    // Step 2: If no exact matches, try partial matches and synonyms
-    if (relevantResources.length === 0) {
-      console.log('🔍 DEBUG: No exact matches, trying partial matches...');
-      
-      // Define topic synonyms and related terms
-      const topicSynonyms = {
-        'plc': ['programming', 'automation', 'control', 'siemens', 'troubleshooting'],
-        'electrical': ['safety', 'maintenance', 'standards', 'procedures'],
-        'mechanical': ['maintenance', 'hydraulic', 'pneumatic', 'systems'],
-        'hydraulics': ['hydraulic', 'fluid', 'pump', 'maintenance', 'systems'],
-        'pneumatics': ['pneumatic', 'air', 'pressure', 'maintenance', 'systems'],
-        'safety': ['lockout', 'tagout', 'procedures', 'standards', 'maintenance'],
-        'controls': ['plc', 'automation', 'programming', 'maintenance'],
-        'automation': ['plc', 'control', 'programming', 'maintenance'],
-        'manufacturing': ['maintenance', 'safety', 'procedures', 'standards']
-      };
-
-      // Try to find resources based on synonyms
-      for (const [mainTopic, synonyms] of Object.entries(topicSynonyms)) {
-        if (topicLower.includes(mainTopic) || synonyms.some(syn => topicLower.includes(syn))) {
-          relevantResources = allResources.filter(resource => 
-            resource.topics.some(keyword => 
-              keyword === mainTopic || synonyms.includes(keyword)
-            )
-          );
-          if (relevantResources.length > 0) {
-            console.log('🔍 DEBUG: Found resources using synonyms for:', mainTopic);
-            break;
-          }
-        }
-      }
+    // Use bilingual search service for intelligent search
+    console.log('🔍 DEBUG: Using bilingual search for topic:', topic);
+    console.log('🌐 DEBUG: Bilingual search activated - searching in both Spanish and English');
+    
+    let relevantResources = BilingualSearchService.searchBilingual(topic, allResources);
+    
+    console.log('🔍 DEBUG: Bilingual search results:', relevantResources.length);
+    console.log('🌐 DEBUG: Found resources:', relevantResources.map(r => r.title));
+    
+    // Show bilingual search details
+    if (relevantResources.length > 0) {
+      console.log('✅ DEBUG: Bilingual search successful!');
+    } else {
+      console.log('⚠️ DEBUG: No results from bilingual search, trying fallback...');
     }
 
-    // Step 3: If still no matches, try broader category matching
+    // If no results from bilingual search, try broader category matching as fallback
     if (relevantResources.length === 0) {
-      console.log('🔍 DEBUG: No matches found, trying broader category matching...');
+      console.log('🔍 DEBUG: No bilingual results, trying broader category matching...');
       
       // Try to find resources based on broader categories
       if (topicLower.includes('plc') || topicLower.includes('programming') || topicLower.includes('automation')) {
