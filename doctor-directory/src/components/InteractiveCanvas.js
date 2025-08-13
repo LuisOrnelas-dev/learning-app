@@ -65,12 +65,25 @@ const InteractiveCanvas = ({ instructions, title, onSave, formData }) => {
   };
 
   const startDrawing = (e) => {
+    // Prevent default behavior to avoid scrolling on touch devices
+    e.preventDefault();
+    
     setIsDrawing(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    
+    // Handle both mouse and touch events
+    let x, y;
+    if (e.touches && e.touches[0]) {
+      // Touch event
+      x = e.touches[0].clientX - rect.left;
+      y = e.touches[0].clientY - rect.top;
+    } else {
+      // Mouse event
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
+    }
     
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -83,11 +96,24 @@ const InteractiveCanvas = ({ instructions, title, onSave, formData }) => {
   const draw = (e) => {
     if (!isDrawing) return;
     
+    // Prevent default behavior to avoid scrolling on touch devices
+    e.preventDefault();
+    
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    
+    // Handle both mouse and touch events
+    let x, y;
+    if (e.touches && e.touches[0]) {
+      // Touch event
+      x = e.touches[0].clientX - rect.left;
+      y = e.touches[0].clientY - rect.top;
+    } else {
+      // Mouse event
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
+    }
     
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -380,6 +406,9 @@ const InteractiveCanvas = ({ instructions, title, onSave, formData }) => {
           onMouseMove={draw}
           onMouseUp={stopDrawing}
           onMouseLeave={stopDrawing}
+          onTouchStart={startDrawing}
+          onTouchMove={draw}
+          onTouchEnd={stopDrawing}
           className="cursor-crosshair w-full h-96 bg-white"
           style={{ touchAction: 'none' }}
         />
@@ -394,6 +423,7 @@ const InteractiveCanvas = ({ instructions, title, onSave, formData }) => {
           <li>• Save your work to track your progress</li>
           <li>• Download your practice to keep for reference</li>
           <li>• Use the AI-generated evaluation criteria to assess your work quality</li>
+          <li>• <strong>Touch devices:</strong> Use your finger or stylus to draw directly on the canvas</li>
         </ul>
       </div>
     </div>
