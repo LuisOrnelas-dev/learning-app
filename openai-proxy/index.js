@@ -7,7 +7,16 @@ const app = express();
 const PORT = 4000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://skillsretain.com',
+    'https://www.skillsretain.com',
+    'https://learning-app-tau-azure.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:3001'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Initialize OpenAI
