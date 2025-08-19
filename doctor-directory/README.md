@@ -1,4 +1,4 @@
-# TechFlow Academy - Training Profile Generator
+# RetAIn - Training Profile Generator
 
 Una aplicación React para generar planes de entrenamiento personalizados usando inteligencia artificial.
 

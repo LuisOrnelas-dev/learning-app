@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🤖 Instalador de Ollama para TechFlow Academy"
+echo "🤖 Instalador de Ollama para RetAIn"
 echo "=============================================="
 
 # Detectar sistema operativo
@@ -66,7 +66,7 @@ if curl -s http://localhost:11434/api/tags > /dev/null; then
     echo "🎉 ¡Configuración completada!"
     echo ""
     echo "💡 Próximos pasos:"
-    echo "1. Abre la app de TechFlow Academy"
+    echo "1. Abre la app de RetAIn"
     echo "2. Haz clic en 'Local AI' en la barra superior"
     echo "3. Prueba la conexión con 'Test Models'"
     echo "4. ¡Disfruta de tu IA local!"

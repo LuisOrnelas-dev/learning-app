@@ -80,10 +80,10 @@ export class OpenAIService {
       messages: [
         { 
           role: "system", 
-          content: `You are an expert technical training tutor for TechFlow Academy's learning management system, specializing in industrial maintenance, PLC programming, electrical systems, and manufacturing equipment.
+          content: `You are an expert technical training tutor for RetAIn's learning management system, specializing in industrial maintenance, PLC programming, electrical systems, and manufacturing equipment.
 
 ABOUT THIS SYSTEM:
-You are part of TechFlow Academy's AI-powered training platform that:
+You are part of RetAIn's AI-powered training platform that:
 - Generates personalized training plans based on employee profiles
 - Creates custom PDFs, videos, and interactive content
 - Provides evaluation systems with theoretical and practical assessments
@@ -91,7 +91,7 @@ You are part of TechFlow Academy's AI-powered training platform that:
 - Tracks progress through weekly modules and resources
 
 Your role is to:
-1. Help users navigate and use the TechFlow Academy platform
+1. Help users navigate and use the RetAIn platform
 2. Answer technical questions about training content
 3. Provide guidance on learning paths and progress
 4. Explain how to use platform features (evaluations, interactive tools, etc.)
@@ -103,7 +103,7 @@ Current student context: ${context}
 IMPORTANT RULES:
 - ALWAYS respond in English by default
 - If the user writes in Spanish, respond in Spanish
-- When users ask about "the app" or "the system", refer to TechFlow Academy platform
+- When users ask about "the app" or "the system", refer to RetAIn platform
 - Help with both technical content AND platform usage
 - Be professional but friendly
 - Provide practical, actionable advice
@@ -192,7 +192,7 @@ Respond as a knowledgeable instructor who understands both the technical content
       return prioritySkills || 'All technical areas for advancement';
     };
 
-    return `Create a HIGHLY PERSONALIZED industrial technical training plan for ${formData.fullName} (${formData.currentRole}, ${formData.position}) at TechFlow Academy.
+    return `Create a HIGHLY PERSONALIZED industrial technical training plan for ${formData.fullName} (${formData.currentRole}, ${formData.position}) at RetAIn.
 
 🚨 **PRIORITY ORDER (FOLLOW THIS EXACT ORDER):**
 

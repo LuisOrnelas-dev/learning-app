@@ -1,9 +1,9 @@
-# TechFlow Academy - Demo Information
+# RetAIn - Demo Information
 
 ## 🚀 **Sistema de Capacitación Inteligente con IA**
 
 ### **📋 Descripción General**
-TechFlow Academy es una plataforma de capacitación industrial inteligente que utiliza IA para generar planes de entrenamiento personalizados basados en el perfil, habilidades y objetivos del empleado.
+RetAIn es una plataforma de capacitación industrial inteligente que utiliza IA para generar planes de entrenamiento personalizados basados en el perfil, habilidades y objetivos del empleado.
 
 ---
 
@@ -181,9 +181,9 @@ TechFlow Academy es una plataforma de capacitación industrial inteligente que u
 ## **📞 Información de Contacto**
 
 ### **Soporte Técnico:**
-- **Email:** support@techflow-academy.com
-- **Documentación:** https://docs.techflow-academy.com
-- **Demo:** https://demo.techflow-academy.com
+- **Email:** support@retain.com
+- **Documentación:** https://docs.retain.com
+- **Demo:** https://demo.retain.com
 
 ### **Configuración Inicial:**
 1. Configurar API keys (OpenAI, YouTube, Google)

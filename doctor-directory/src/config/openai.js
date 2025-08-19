@@ -16,7 +16,7 @@ export const OPENAI_CONFIG = {
       MAX_TOKENS: 1500
     },
     CHATBOT: {
-      SYSTEM: "You are a helpful technical training tutor for TechFlow Academy. You help students with their training questions and provide guidance on technical topics.",
+      SYSTEM: "You are a helpful technical training tutor for RetAIn. You help students with their training questions and provide guidance on technical topics.",
       TEMPERATURE: 0.7,
       MAX_TOKENS: 300
     }

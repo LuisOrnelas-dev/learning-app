@@ -35,7 +35,7 @@ ollama pull llama2:7b  # Versión más pequeña
 ## 🔧 Configuración en la App
 
 1. **Ejecuta Ollama** en segundo plano
-2. **Abre la app** de TechFlow Academy
+2. **Abre la app** de RetAIn
 3. **Haz clic en "Local AI"** en la barra superior
 4. **Prueba la conexión** con el botón "Test Models"
 

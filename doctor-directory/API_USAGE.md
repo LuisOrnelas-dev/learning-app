@@ -40,7 +40,7 @@ REACT_APP_OPENAI_MODEL=gpt-4
 
 **Prompt utilizado:**
 ```
-Create a comprehensive, personalized technical training plan for a [ROLE] at TechFlow Academy.
+Create a comprehensive, personalized technical training plan for a [ROLE] at RetAIn.
 
 EMPLOYEE PROFILE:
 - Name: [NAME]

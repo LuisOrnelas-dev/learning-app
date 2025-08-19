@@ -513,7 +513,7 @@ export default function HexpolTrainingForm() {
     {
       id: 1,
       type: 'bot',
-      message: 'Hello! I\'m your virtual tutor from TechFlow Academy. I\'m here to help you with your training. How can I assist you today?',
+      message: 'Hello! I\'m your virtual tutor from RetAIn. I\'m here to help you with your training. How can I assist you today?',
       timestamp: new Date()
     }
   ]);
@@ -1854,7 +1854,7 @@ export default function HexpolTrainingForm() {
           <div className="absolute bottom-20 right-0 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg">
             <div className="flex items-center">
               <span className="mr-2 text-lg">👨‍🏫</span>
-              <span>TechFlow Tutor</span>
+              <span>RetAIn Tutor</span>
             </div>
             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
           </div>
@@ -1872,7 +1872,7 @@ export default function HexpolTrainingForm() {
                   <span className="text-2xl">👨‍🏫</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">TechFlow Tutor</h3>
+                  <h3 className="font-semibold text-lg">RetAIn Tutor</h3>
                   <p className="text-blue-100 text-sm">Your personal learning guide</p>
                 </div>
               </div>
@@ -1948,7 +1948,7 @@ export default function HexpolTrainingForm() {
             <FaCog className="text-3xl" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            TechFlow Academy - Training Profile
+            RetAIn - Training Profile
           </h1>
           <p className="text-lg text-gray-600">
             {activeTab === 'form' 

@@ -112,7 +112,7 @@ export class OllamaService {
     const topicsList = topics.map(t => t.trim()).filter(Boolean).join(', ');
     return `You are an expert instructional designer.
 
-Create a technical training plan for ${formData.fullName} (${formData.currentRole}) at TechFlow Academy.
+Create a technical training plan for ${formData.fullName} (${formData.currentRole}) at RetAIn.
 
 Focus the modules on the following topics: ${topicsList}. You may add related subtopics if needed, but prioritize the user's topics.
 
